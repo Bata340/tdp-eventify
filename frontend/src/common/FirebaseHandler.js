@@ -9,13 +9,12 @@ let md5 = require("md5");
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyC0xLAofWL7X9YmY24ap_XVeA7Pf0cbrNI",
-  authDomain: "airbnb-admin-gp5.firebaseapp.com",
-  projectId: "airbnb-admin-gp5",
-  storageBucket: "airbnb-admin-gp5.appspot.com",
-  messagingSenderId: "243487350151",
-  appId: "1:243487350151:web:986ae6d90183e5174b8722",
-  measurementId: "G-0XFNCKE2ST"
+    apiKey: "AIzaSyC9Dm-70pZm27HIF0iB3QC4Xu9KM7JEd2c",
+    authDomain: "eventify-34ac6.firebaseapp.com",
+    projectId: "eventify-34ac6",
+    storageBucket: "eventify-34ac6.appspot.com",
+    messagingSenderId: "259623971337",
+    appId: "1:259623971337:web:2dc25c7efd9e2a2aff66d8"
 };
 
 // Initialize Firebase
