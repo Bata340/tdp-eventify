@@ -1,0 +1,39 @@
+#formWrapper{
+    margin-top: 2rem;
+    padding: 2rem;
+    border: 2px solid gray;
+    border-radius: 25px;
+    text-align: center;
+}
+
+#AlertError{
+    text-align: left;
+}
+
+.inputClass{
+    margin-top: 1rem;
+}
+
+.buttonClass{
+    margin-top: 2rem;
+    display: flex !important;
+    justify-content: center;
+}
+
+.buttonClass button{
+    margin-left:10px;
+    margin-right:10px;
+}
+
+.inputStyle{
+    width:250px;
+}
+
+a{
+    color: rgb(39, 163, 204);
+    text-decoration: underline;
+}
+
+a:hover{
+    cursor:pointer;
+}
