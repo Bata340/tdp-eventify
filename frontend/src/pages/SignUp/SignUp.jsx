@@ -1,5 +1,8 @@
 import React from 'react'
-import { Button, Container, IconButton, InputAdornment, TextField, Alert, AlertTitle, Collapse } from '@mui/material'
+import { Button, Container, IconButton, InputAdornment, TextField, Alert, AlertTitle, Collapse } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +12,7 @@ export const SignUp = (props) => {
 
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    const [age, setAge] = useState('');
+    const [birthDate, setBirthDate] = useState(null);
     const [phoneNumber, setPhoneNumber] = useState('');
     const [location, setLocation] = useState('');
     const [username, setUsername] = useState('');
@@ -22,6 +25,9 @@ export const SignUp = (props) => {
 
     const onSubmitSignUp = async (event) => {
         event.preventDefault();
+        if(!birthDate){
+            return;
+        }
         const paramsRegister = {
             method: "POST",
             headers: {
@@ -32,7 +38,7 @@ export const SignUp = (props) => {
                 password: password,
                 first_name: firstName,
                 last_name: lastName,
-                age: age,
+                birth_date: birthDate.toISOString().substr(0,10),
                 phone_number: phoneNumber,
                 location: location,
                 login: true
@@ -141,17 +147,20 @@ export const SignUp = (props) => {
                         onChange = {(event) => setLastName(event.target.value)}
                     />
                 </Container>
-                <Container className={"inputClass"}>
-                    <TextField 
-                        label = "Age"
-                        type = "number"
-                        placeholder = "Age"
-                        name = "Age"
-                        className={"inputStyle"}
-                        value={age}
-                        onChange = {(event) => setAge(event.target.value)}
-                    />
-                </Container>
+                <LocalizationProvider  dateAdapter={AdapterDayjs } >
+                    <Container className={"inputClass"}>
+                    
+                        <DatePicker
+                            id="birth_date"
+                            label="Birth Date"
+                            inputFormat="DD/MM/YYYY"
+                            value={birthDate || null}
+                            onChange={(event) => setBirthDate(event)}
+                            className={"inputStyle"}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    </Container>
+                </LocalizationProvider>
                 <Container className={"inputClass"}>
                     <TextField 
                         label = "Phone Number"

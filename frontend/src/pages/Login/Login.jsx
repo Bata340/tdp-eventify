@@ -5,8 +5,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
-//require("dotenv").config();
-
 export const Login = (props) => {
 
     const [username, setUsername] = useState('');
@@ -39,7 +37,7 @@ export const Login = (props) => {
             if(!jsonResponse.status_code){
                 localStorage.setItem("sessionToken", true);
                 localStorage.setItem("username", JSON.parse(paramsLogin.body).username);
-                window.location.reload();
+                navigate('/');
             }else{
                 setErrorLogin(jsonResponse.detail);
                 setShowErrorLogin(true);

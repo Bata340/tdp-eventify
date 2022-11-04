@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from model import schema
 import uuid
+import datetime
 
 
 router = APIRouter()
@@ -13,8 +14,8 @@ registeredUsers['generico'] =  schema.User(
         password = "generico",
         first_name = "Usuario",
         last_name = "Generico",
-        age = 30,
-        phone_number = 2222-343434,
+        birth_date = datetime.date(2000,6,30),
+        phone_number = "2222-343434",
         location = "Argentina",
         login = False
     )
@@ -29,7 +30,7 @@ def removeNoneValues(dict_aux: dict):
 
 @router.post("/register", status_code=status.HTTP_200_OK)
 async def register(user: schema.User):
-
+    print(str(user))
     if user.username in registeredUsers.keys():
         return HTTPException(status_code=500, detail="A user with name " + user["username"] + " already exists")
     user.login = False

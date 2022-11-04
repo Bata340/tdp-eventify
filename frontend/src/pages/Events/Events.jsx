@@ -28,8 +28,9 @@ export const Events = () => {
                   `files/${eventos[i].photos[0]}`
               );
               urlsArray.push(url);
+          }else{
+            urlsArray.push("");
           }
-          urlsArray.push("");
           
       }
       setUrlsImages( urlsArray );

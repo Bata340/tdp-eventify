@@ -1,6 +1,6 @@
 from typing import List, Optional, Union
 from pydantic import BaseModel
-from datetime import date
+from datetime import date, datetime
 
 
 class User(BaseModel):
@@ -8,7 +8,7 @@ class User(BaseModel):
     password: str
     first_name: str
     last_name: str
-    age: Union[int, None] = None
+    birth_date: date
     phone_number : Union[str, None] = None
     location: str
     login: bool
