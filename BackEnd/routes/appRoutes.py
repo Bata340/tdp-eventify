@@ -20,6 +20,14 @@ registeredUsers['generico'] =  schema.User(
         login = False
     )
 
+registeredEvents = {}
+
+def filterEventsByOwner(propiesties, owner):
+    ownersRegistryList = []
+    for value in propiesties:
+        if value.owner == owner:
+            ownersRegistryList.append(value)
+    return ownersRegistryList
 
 def removeNoneValues(dict_aux: dict):
     dict_aux2 = {}
@@ -53,3 +61,81 @@ async def getUser(username: str):
     if username not in registeredUsers.keys():
         return HTTPException(status_code=404, detail="User with name " + username + " does not exist")
     return {"message": registeredUsers[username]}
+
+@router.get("/events", status_code=status.HTTP_200_OK)
+async def getEvents(owner: Optional[str] = None):
+    if owner != None:
+        return filterEventsByOwner(registeredEvents)
+    return registeredEvents
+
+@router.post("event/")
+async def publishEvent(id: str, event: schema.Event):
+    #faltaria agregar que fecha es el evento
+    id = str(uuid.uuid4())
+    registeredEvent[id] = schema.Event(
+        key = id, 
+        name = event.name,
+        owner = event.owner,
+        price = event.price,
+        description = event.description,
+        location = event.location,
+        photos = event.photos
+    )
+    reservedEvents[id] = []
+    return {"message" : "registered event with id: " + id}
+
+
+@router.get("event/{id}")
+async def getEventWithId(id: str):
+    if id not in registeredEvents.keys():
+        return HTTPException(status_code=404, detail="Event with id " + id + " does not exist")
+    
+    return {"message": registeredEvents[id]}
+
+@router.delete("event/{id}")
+async def deleteEvent(id: str):
+    if id not in registeredEvents.keys():
+        return HTTPException(status_code=404, detail="Event with id " + id + " does not exist")
+    registeredEvents.pop(id, None)
+    return {"message" : "ok"}
+
+@router.patch("event/{id}")
+async def editEvent(id: str, event: schema.EventPatch):
+    if id not in registeredEvents.keys():
+        return HTTPException(status_code=404, detail="Event with id " + id + " does not exist")
+
+    stored_event_data = registeredEvents[id]
+    update_data = event.dict(exclude_unset=True)
+    updated_event = stored_event_data.copy(update=update_data)
+    registeredEvents[id] = updated_event
+    return {"message" : "ok"}
+
+@router.delete("/event/{eventId}/photos/{photoId}")
+async def deleteEventPhotos(eventId: str, photoId: str):
+    if id not in registeredEvents.keys():
+        return HTTPException(status_code=404, detail="Event with id " + eventId + " does not exist")
+
+    event = registeredEvents[id]
+    if id not in event.photos.keys():
+        return HTTPException(status_code=404, detail="Photo with id " + photoId + " does not exist")
+
+    event.photos.pop(event.photos.index(photoId), None)
+    return {"message" : "ok"}
+    
+@router.post("/event/reserve/{id}")
+async def reserveEvent(id: str, reservation: schema.Reservation):
+    if id not in registeredEvents.keys():
+        return HTTPException(status_code=404, detail="Event with id " + eventId + " does not exist")
+
+    event = registeredEvents[id]
+    if event.maxAvailability is not None and event.maxAvailability == 0:
+        return HTTPException(status_code=404, detail="Event with id " + eventId + " has no more availability")
+
+    reserve.id = str(uuid.uuid4())
+    reservedEvents[id].append(reservation)
+    if registeredEvents[id].maxAvailability is not None:
+        registeredEvents[id].maxAvailability -= 1
+    
+    return {"message": "Reservation " + reserve.id  + " was requested  in event " + id + " for " + reserve.dateReserved.strftime("%Y/%m/%d")}
+
+        

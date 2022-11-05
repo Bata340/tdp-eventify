@@ -17,17 +17,18 @@ class UserLogin(BaseModel):
     username: str
     password: str    
 
-class Property(BaseModel):
+class Event(BaseModel):
     key: Optional[str]
     name: str
     owner: str
     price: int
     description: str
     location: str
-    score: int
+    maxAvailability: Union[int, None] = None #cupos. si es None es porque son ilimitados
     photos: Union[List[str], None] = None
 
-class PropertyPatch(BaseModel):
+
+class EventPatch(BaseModel):
     name: Optional[str] = None
     price: Optional[int] = None
     description: Optional[str] = None
@@ -37,17 +38,4 @@ class PropertyPatch(BaseModel):
 class Reservation(BaseModel):
     id: Optional[str]
     userid: str
-    dateFrom: date
-    dateTo: date
-
-
-class Experience(BaseModel):
-    name: str
-    owner: str
-    price: int
-    description: str 
-    location: str
-    score: int
-    photos: Union[List[str], None] = None
-    type: str
-    languages: List[str]
+    dateReserved: date
