@@ -37,6 +37,7 @@ export const Login = (props) => {
             if(!jsonResponse.status_code){
                 localStorage.setItem("sessionToken", true);
                 localStorage.setItem("username", JSON.parse(paramsLogin.body).username);
+                window.dispatchEvent(new Event('storage')); 
                 navigate('/');
             }else{
                 setErrorLogin(jsonResponse.detail);

@@ -3,7 +3,7 @@ import { Button, Container, TextField, Alert, AlertTitle, Collapse, Input,
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { handleUploadFirebaseImage } from '../../common/FirebaseHandler';
-import { DatePicker, StaticDatePicker, PickersDay } from '@mui/x-date-pickers';
+import { StaticDatePicker, PickersDay } from '@mui/x-date-pickers';
 import { styled } from "@mui/material/styles";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -20,7 +20,7 @@ export const EventsUpload = (props) => {
     const [maxCapacity, setMaxCapacity] = useState(null);
     const [description, setDescription] = useState('');
     const [eventDates, setEventDates] = useState([]);
-    const [photosNamesHashed, setPhotosNamesHashed] = useState([]);
+    const [setPhotosNamesHashed] = useState([]);
     const [photosUpload, setPhotosUpload] = useState([]);
     const [fileInputShow, setFileInputShow] = useState("");
     const [showErrorEventUpload, setShowErrorEventUpload] = useState(false);
@@ -139,11 +139,9 @@ export const EventsUpload = (props) => {
       };
 
     const handleChangeDates = (selectedDate) => {
-        console.log("AAA");
         const array = [...eventDates];
         const date = startOfDay(new Date(selectedDate.toISOString()));
         const indexElem = findIndexDate(array, date);
-        console.log(indexElem);
         if ( indexElem >= 0 ){
             array.splice( indexElem, 1 );
         } else {

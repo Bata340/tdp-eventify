@@ -1,15 +1,10 @@
 import React from "react";
-
+import { useState, useEffect } from "react";
 import { Navbar, Nav, NavDropdown, Button } from "react-bootstrap";
 import "./Navbar.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function logout(){
-	localStorage.removeItem("sessionToken");
-    localStorage.removeItem("user");
-    localStorage.removeItem("username");
-    window.location.reload();
-}
+
 
 function isLoggedIn(){
     return (
@@ -18,7 +13,31 @@ function isLoggedIn(){
     );
 }
 
+
+
 export const NavBar = () => {
+
+    const [isLoggedInSt, setIsLoggedInSt] = useState(isLoggedIn());
+
+
+    function logout(){
+        localStorage.removeItem("sessionToken");
+        localStorage.removeItem("user");
+        localStorage.removeItem("username");
+        setIsLoggedInSt(false);
+    }
+
+
+    useEffect(() => {
+        const handleStorage = () => {
+            setIsLoggedInSt(isLoggedIn());
+        }
+    
+        window.addEventListener('storage', handleStorage);
+        return () => window.removeEventListener('storage', handleStorage());
+    }, []);
+
+
 	return (
 		<div className="fixed-top">
             <Navbar className = "bg-color_custom_nav" expand="lg">
@@ -60,7 +79,7 @@ export const NavBar = () => {
                     }
                 </Nav>
                 <Nav className="ms-auto">
-                    {isLoggedIn() ? 
+                    {isLoggedInSt ? 
                         <Button id="button-logout" variant="danger" onClick = {logout}>
                             <strong>Logout</strong>
                         </Button>

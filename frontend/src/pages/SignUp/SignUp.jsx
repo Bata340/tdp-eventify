@@ -54,8 +54,8 @@ export const SignUp = (props) => {
             if(!jsonResponse.status_code){
                 localStorage.setItem("sessionToken", true);
                 localStorage.setItem("username", JSON.parse(paramsRegister.body).username);
+                window.dispatchEvent(new Event('storage')); 
                 navigate('/');
-                window.location.reload();
             }else{
                 setErrorSignUp(jsonResponse.detail);
                 setShowErrorSignUp(true);
@@ -187,7 +187,7 @@ export const SignUp = (props) => {
                     <Button type="submit" variant="contained" sx={{fontSize:16}}>Sign Up</Button>
                 </Container>
                 <Container  className={"buttonClass"} maxWidth="sm">
-                    <a href='/'>Already have an account?</a>
+                    <a href='/login'>Already have an account?</a>
                 </Container>
             </Container>
         </form>

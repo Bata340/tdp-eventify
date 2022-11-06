@@ -25,7 +25,7 @@ class Event(BaseModel):
     description: str
     location: str
     score: Optional[int]
-    maxAvailability: Optional[List[int]] = None #cupos. si es None es porque son ilimitados. Los cupos deberían ser los cupos para cada fecha.
+    maxAvailability: Optional[int] = None #cupos. si es None es porque son ilimitados. Los cupos deberían ser los cupos para cada fecha.
     eventDates: Optional[List[datetime]] = None #Si la lista está vacía o es null, entonces puede hacerse todos los días.
     photos: Union[List[str], None] = None
 
@@ -36,7 +36,7 @@ class EventPatch(BaseModel):
     description: Optional[str] = None
     maxAvailability: Optional[int] = None
     location: Optional[str] = None
-     maxAvailability: Optional[List[int]] = None 
+    maxAvailability: Optional[List[int]] = None 
     eventDates: Optional[List[datetime]] = None
     photos: Optional[List[str]] = None
 

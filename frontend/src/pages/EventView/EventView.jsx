@@ -1,22 +1,45 @@
-import { Button, Container, Grid, Rating, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import { Button, Container, Grid, Rating, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PhotoEvent } from '../EventsEdit/PhotoEvent';
+import { DatePicker } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import startOfDay from "date-fns/startOfDay";
 import Carousel from 'react-material-ui-carousel';
 import './EventView.css';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 
 export const EventView = (props) => {
 
     const [searchParams] = useSearchParams();
     const [photosNamesHashed, setPhotosNamesHashed] = useState([]);
+    const [bookingDate, setBookingDate] = useState(null);
     const [event, setEvent] = useState('');
     const [showDialog, setShowDialog] = useState(false);
+    const [showSureBookingDialog, setShowSureBookingDialog] = useState(false);
+    const [errorDialog, setErrorDialog] = useState("");
+    const [showErrorDialog, setShowErrorDialog] = useState(false);
 
     const API_URL = 'http://localhost:8000';
     const navigate = useNavigate();
 
-    const onSubmit = async (event) => {
-        event.preventDefault();
+
+    const isInvalidDate = (date) => {
+        const dateAsYMD = date.toISOString().substr(0,10);
+        const existingDate = event.eventDates.filter(eventDate => eventDate.substr(0,10) === dateAsYMD);
+        const todayDate = new Date();
+        todayDate.setDate(todayDate.getDate() - 1);
+        return (date < todayDate || existingDate.length <= 0)
+    }
+
+
+    const onSubmit = async () => {
+        if(!bookingDate){
+            setErrorDialog("You must select a booking date before continuing.");
+            setShowErrorDialog(true);
+            return;
+        }
+        setShowSureBookingDialog(false);
         const paramsPost = {
             method: "POST",
             headers: {
@@ -25,7 +48,7 @@ export const EventView = (props) => {
             body: JSON.stringify({
                 "id":searchParams.get("id"),
                 "userid": localStorage.getItem("username"),
-                "dateReserved": new Date().toISOString().substr(0, 10),
+                "dateReserved": bookingDate.toISOString(),
             })
         };
         const url = `${API_URL}/event/reserve/${searchParams.get("id")}`;
@@ -70,12 +93,23 @@ export const EventView = (props) => {
 
     useEffect(() => {
         getDataForFields(searchParams.get("id"));
+    //eslint-disable-next-line
     }, []);
 
 
+    const handleFormSubmit = (event) => {
+        event.preventDefault();
+        if(bookingDate != null){
+            setShowSureBookingDialog(true);
+        }else{
+            setErrorDialog("You must select a booking date before continuing.");
+            setShowErrorDialog(true);
+        }
+    }
+
   return (
     <>
-        <form onSubmit = {onSubmit}>
+        <form onSubmit = {handleFormSubmit}>
             
             <Container spacing={12}  sx={{ width: '80%' }} id="formWrapper">
                 <Grid container item xs={4} md={1} className={"buttonClass"} marginBottom={5}>
@@ -137,6 +171,27 @@ export const EventView = (props) => {
                         </Grid> 
                     </Grid>
                     <Container  className={"buttonClass"} maxWidth="sm">
+                        <Grid container item justifyContent="center" alignItems="center">
+                            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                <DatePicker
+                                    id="bookingDate"
+                                    label="Booking Date"
+                                    inputFormat="dd/MM/yyyy"
+                                    value={bookingDate || null}
+                                    onChange={(event) => {
+                                        if(!isInvalidDate(event)){
+                                            setBookingDate(startOfDay(new Date(event.toISOString())));
+                                        }else{
+                                            setBookingDate(null);
+                                        }
+                                    }}
+                                    renderInput={(params) => <TextField {...params} />}
+                                    shouldDisableDate={isInvalidDate}
+                                />
+                            </LocalizationProvider>
+                        </Grid>
+                    </Container>
+                    <Container  className={"buttonClass"} maxWidth="sm">
                         <Button type="submit" variant="contained" sx={{fontSize:16}}>{event.price > 0 ? 'Buy':'Book'}</Button>
                     </Container>
                 </Grid>
@@ -161,6 +216,48 @@ export const EventView = (props) => {
             </DialogContent>
             <DialogActions>
             <Button onClick={goBackToHome}>OK</Button>
+            </DialogActions>
+      </Dialog>
+      <Dialog
+            open={showSureBookingDialog}
+            onClose={() => setShowSureBookingDialog(false)}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">
+            {`Are you sure you want to book?`}
+            </DialogTitle>
+            <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+                Are you sure you want to book the event: <strong>{event.name}</strong> ?
+                <br/>
+                For this date: <strong>{bookingDate?`${bookingDate.getDate()}/${bookingDate.getMonth()+1}/${bookingDate.getFullYear()}`:null}</strong>.
+                <br/>
+                <br/>
+                <strong>This can not be reverted afterwards.</strong>
+            </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={onSubmit}>OK</Button>
+                <Button onClick={() => setShowSureBookingDialog(false)}>Cancel</Button>
+            </DialogActions>
+      </Dialog>
+      <Dialog
+            open={showErrorDialog}
+            onClose={() => setShowErrorDialog(false)}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">
+                Error
+            </DialogTitle>
+            <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+                {errorDialog}
+            </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setShowErrorDialog(false)}>OK</Button>
             </DialogActions>
       </Dialog>
     </>

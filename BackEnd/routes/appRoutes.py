@@ -27,7 +27,7 @@ reservedEvents = {}
 def thereIsAvailabilityLeft(event, dateIndex):
     if event.maxAvailability is None:
         return True 
-    if len(reservedEvents[event.key]) < event.maxAvailability[dateIndex]:
+    if len(reservedEvents[event.key]) < event.maxAvailability:
         return True
     return False
 
