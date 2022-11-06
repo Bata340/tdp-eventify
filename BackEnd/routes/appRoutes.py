@@ -132,13 +132,19 @@ async def reserveEvent(id: str, reservation: schema.Reservation):
         return HTTPException(status_code=404, detail="Event with id " + id + " does not exist")
 
     event = registeredEvents[id]
-    if event.maxAvailability is not None and event.maxAvailability == 0:
-        return HTTPException(status_code=404, detail="Event with id " + id + " has no more availability")
+
+    if (event.eventDates is not None) and (reservation.dateReserved not in event.eventDates):
+        return HTTPException(status_code=404, detail="Event with id " + id + " has no date " + reservation.dateReserved.strftime("%Y/%m/%d"))
+
+    dateIndex = event.eventDates.index(reservation.dateReserved)
+
+    if event.maxAvailability is not None and event.maxAvailability[dateIndex] == 0:
+        return HTTPException(status_code=404, detail="Event with id " + id + " has no more availability for " + reservation.dateReserved.strftime("%Y/%m/%d"))
 
     reservation.id = str(uuid.uuid4())
     reservedEvents[id].append(reservation)
     if registeredEvents[id].maxAvailability is not None:
-        registeredEvents[id].maxAvailability -= 1
+        registeredEvents[id].maxAvailability[dateIndex] -= 1
     
     return {"message": "Reservation " + reservation.id  + " was requested  in event " + id + " for " + reservation.dateReserved.strftime("%Y/%m/%d")}
 
