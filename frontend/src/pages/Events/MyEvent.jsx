@@ -1,5 +1,6 @@
 import * as React from 'react';
-import {Card, CardActions, CardContent, CardMedia, Grid, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions} from '@mui/material';
+import {Card, CardActions, CardContent, CardMedia, Grid, Dialog, 
+  DialogTitle, DialogContent, DialogContentText, DialogActions, TextField} from '@mui/material';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import {useState, useEffect} from 'react';
@@ -52,7 +53,7 @@ export default function MyEvent (props) {
 
   return (
     <>
-      <Card sx={{ maxWidth: "100%", height:"100%"}}>
+      <Card sx={{ width: "100%", height:"100%"}}>
         <CardContent>
           <Typography variant="h5" component="div">
             {props.name}
@@ -65,9 +66,14 @@ export default function MyEvent (props) {
             alt={props.name}
           />
 
-          <Typography variant="body1">
-            {props.description}
-          </Typography>
+          <TextField
+            style={{width:"100%", marginTop: "1.5rem", margionBottom:"1.5rem"}}
+            multiline
+            rows={2}
+            readOnly
+            disabled
+            value={props.description}
+          />
           <Typography variant="body2">
             by {props.owner} in {props.location} [{props.score}]
           </Typography>

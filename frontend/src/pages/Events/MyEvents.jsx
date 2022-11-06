@@ -64,10 +64,10 @@ export const MyEvents = () => {
     return (    
         !loading ? 
         <Container>
-            <Grid container>
+            <Grid container spacing={6}>
                 {eventos.map( (prop, idx) => {
                     return (
-                        <Grid style={{"marginTop":"2rem"}} item xs={4} key={`${prop.key}_${urlsImages[idx]}`}>
+                        <Grid style={{"marginTop":"2rem"}} item xs={12} md={6} lg={4} key={`${prop.key}_${urlsImages[idx]}`}>
                             <MyEvent 
                                 id={prop.key}
                                 key={`${prop.key}_${urlsImages[idx]}`}

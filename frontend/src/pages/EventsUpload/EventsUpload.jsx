@@ -1,15 +1,25 @@
-import { Button, Container, TextField, Alert, AlertTitle, Collapse, Input, CircularProgress  } from '@mui/material';
+import { Button, Container, TextField, Alert, AlertTitle, Collapse, Input, 
+    CircularProgress, FormControlLabel, Checkbox, Grid, InputAdornment } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { handleUploadFirebaseImage, deleteFirebaseImage } from '../../common/FirebaseHandler';
-
+import { handleUploadFirebaseImage } from '../../common/FirebaseHandler';
+import { DatePicker, StaticDatePicker, PickersDay } from '@mui/x-date-pickers';
+import { styled } from "@mui/material/styles";
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import startOfDay from "date-fns/startOfDay";
+import './EventsUpload.css';
 
 export const EventsUpload = (props) => {
 
     const [price, setPrice] = useState(0);
     const [eventName, setEventName] = useState('');
     const [location, setLocation] = useState('');
+    const [hasMaxCapacity, setHasMaxCapacity] = useState(false);
+    const [hasSpecificDates, setHasSpecificDates] = useState(false);
+    const [maxCapacity, setMaxCapacity] = useState(null);
     const [description, setDescription] = useState('');
+    const [eventDates, setEventDates] = useState([]);
     const [photosNamesHashed, setPhotosNamesHashed] = useState([]);
     const [photosUpload, setPhotosUpload] = useState([]);
     const [fileInputShow, setFileInputShow] = useState("");
@@ -18,6 +28,24 @@ export const EventsUpload = (props) => {
     const [loadingAsync, setLoadingAsync] = useState(false);
     const API_URL = 'http://localhost:8000';
     const navigate = useNavigate();
+
+
+    const CustomPickersDay = styled(PickersDay, {
+        shouldForwardProp: (prop) => prop !== "selected"
+      })(({ theme, selected }) => ({
+        ...(selected && {
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.common.white,
+          "&:hover, &:focus": {
+            backgroundColor: theme.palette.primary.dark
+          },
+          borderTopLeftRadius: "50%",
+          borderBottomLeftRadius: "50%",
+          borderTopRightRadius: "50%",
+          borderBottomRightRadius: "50%"
+        })
+      }));
+
 
     const onSubmitUpload = async (event) => {
         event.preventDefault();
@@ -35,6 +63,8 @@ export const EventsUpload = (props) => {
                 description: description,
                 location: location,
                 score: 0,
+                maxAvailability: maxCapacity,
+                eventDates: eventDates,
                 photos: photosNames
             })
         };
@@ -65,6 +95,14 @@ export const EventsUpload = (props) => {
       navigate('/');
     }
 
+
+    const disableDates = (dateParam) => {
+        const date = new Date();
+        date.setDate(date.getDate() - 1);
+        return dateParam < date
+    }
+
+
     const handleUploadPhotos = async () => {
         const hashedNames = [];
         for ( let i=0; i<photosUpload.length; i++ ){
@@ -74,10 +112,51 @@ export const EventsUpload = (props) => {
         return hashedNames;
     }
 
+    const findDate = (dates, date) => {
+        const dateTime = date.getTime();
+        return dates.find((item) => item.getTime() === dateTime);
+    };
+
+    const findIndexDate = (dates, date) => {
+        const dateTime = date.getTime();
+        return dates.findIndex((item) => item.getTime() === dateTime);
+      };
+
+    const renderPickerDay = (date, selectedDates, pickersDayProps) => {
+        if (!eventDates) {
+          return <PickersDay {...pickersDayProps} />;
+        }
+        const dateToCompare = startOfDay(new Date(date.toISOString()));
+        const selected = findDate(eventDates, dateToCompare);
+    
+        return (
+          <CustomPickersDay
+            {...pickersDayProps}
+            disableMargin
+            selected={selected}
+          />
+        );
+      };
+
+    const handleChangeDates = (selectedDate) => {
+        console.log("AAA");
+        const array = [...eventDates];
+        const date = startOfDay(new Date(selectedDate.toISOString()));
+        const indexElem = findIndexDate(array, date);
+        console.log(indexElem);
+        if ( indexElem >= 0 ){
+            array.splice( indexElem, 1 );
+        } else {
+            array.push( date );
+        }
+        setEventDates( array );
+    }
+
+
   return (
     <>
         <form onSubmit = {onSubmitUpload}>
-            <Container maxWidth="sm" id="formWrapper">
+            <Container id="formWrapper" className="uploadForm">
                 <Collapse in={showErrorEventUpload}>
                     <Alert onClose={onCloseError} severity="error" id="AlertError">
                         <AlertTitle><strong>Event Upload Error</strong></AlertTitle>
@@ -100,11 +179,14 @@ export const EventsUpload = (props) => {
                 </Container>
                 <Container className={"inputClass"}>
                     <TextField 
-                        label = "Price Per Day (U$D)"
+                        label = "Price"
                         type = "number"
-                        placeholder = "Price Per Day (U$D)"
-                        name = "Price Per Day"
+                        placeholder = "Price"
+                        name = "Price"
                         className={"inputStyle"}
+                        InputProps={{
+                            startAdornment: <InputAdornment position="start">U$D</InputAdornment>,
+                        }}
                         value={price}
                         onChange = {(event) => setPrice(event.target.value)}
                     />
@@ -120,6 +202,52 @@ export const EventsUpload = (props) => {
                         onChange = {(event) => setLocation(event.target.value)}
                     />
                 </Container>
+                <Container className={"inputClass"}>
+                    <FormControlLabel control={
+                        <Checkbox onClick={() => {setHasMaxCapacity(!hasMaxCapacity); setMaxCapacity(null);}}/>
+                    } label="Has Max Capacity?" />
+                </Container>
+                <Container className={"inputClass"}>
+                    <FormControlLabel control={
+                        <Checkbox onClick={() => {setHasSpecificDates(!hasSpecificDates); setEventDates([]);}}/>
+                    } label="Has Specific Dates?" />
+                </Container>
+                { hasMaxCapacity ? <>
+                    <Container className={"inputClass"}>
+                        <TextField 
+                            label = "Max. Capacity"
+                            type = "number"
+                            placeholder = "Max. Capacity"
+                            name = "max_capacity"
+                            className={"inputStyle"}
+                            value={maxCapacity ? maxCapacity : ""}
+                            onChange = {(event) => setMaxCapacity(event.target.value)}
+                        />
+                    </Container>
+                </> : null
+                }
+                {hasSpecificDates ?
+                <LocalizationProvider  dateAdapter={AdapterDateFns} >
+                    <Grid  item container justifyContent="center" alignItems="center" className={"inputClass"} style={{marginTop:"1.5rem"}}>
+                        <label><strong>Event's Valid Dates</strong></label>
+                    </Grid>
+                    <Grid  item container justifyContent="center" alignItems="center" className={"inputClass"}>
+                        <StaticDatePicker
+                            displayStaticWrapperAs="desktop"
+                            id="event_date"
+                            label="Event's Dates"
+                            inputFormat="DD/MM/YYYY"
+                            value={eventDates || []}
+                            onChange={handleChangeDates}
+                            onSelect={handleChangeDates}
+                            style={{margin:"auto"}}
+                            shouldDisableDate={disableDates}
+                            renderDay={renderPickerDay}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    </Grid>
+                </LocalizationProvider> : null
+                }
                 <Container className={"inputClass"}>
                     <TextField
                         id="description"

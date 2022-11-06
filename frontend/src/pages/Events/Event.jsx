@@ -2,6 +2,7 @@ import * as React from 'react';
 import {Card, CardContent, CardMedia, TextField, Typography, Rating } from '@mui/material'
 import {useState} from 'react';
 import { useEffect } from 'react';
+import "./event.css";
 
 export default function Event (props) {
 
@@ -12,7 +13,7 @@ export default function Event (props) {
   }, [props.photos]);
 
   return (
-    <Card sx={{ maxWidth: "100%", height:"100%" }}>
+    <Card sx={{ width: "100%", height:"100%" }}>
       <CardContent>
         <Typography variant="h5" component="div">
           {props.name}
@@ -20,18 +21,20 @@ export default function Event (props) {
 
         <CardMedia
           component="img"
-          height="194"
+          className = "imgCard"
+          style={{width:"100%"}}
           image={imageURL}
           alt={props.name}
         />
 
-        <TextField 
-            variant="body1"
-            rows={4}
+        <TextField
+            style={{width:"100%", marginTop: "1.5rem", margionBottom:"1.5rem"}}
+            multiline
+            rows={2}
             readOnly
-        >
-          {props.description}
-        </TextField>
+            disabled
+            value={props.description}
+        />
         <Typography variant="body2">
           by {props.owner} in {props.location}
         </Typography>

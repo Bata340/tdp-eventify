@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PhotoEvent } from '../EventsEdit/PhotoEvent';
 import Carousel from 'react-material-ui-carousel';
+import './EventView.css';
 
 export const EventView = (props) => {
 
@@ -22,12 +23,12 @@ export const EventView = (props) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                /*VER ESTO*/
                 "id":searchParams.get("id"),
-                "userid": localStorage.getItem("username")
+                "userid": localStorage.getItem("username"),
+                "dateReserved": new Date().toISOString().substr(0, 10),
             })
         };
-        const url = `${API_URL}/events/reserve/${searchParams.get("id")}`;
+        const url = `${API_URL}/event/reserve/${searchParams.get("id")}`;
         const response = await fetch(
             url,
             paramsPost
@@ -60,7 +61,6 @@ export const EventView = (props) => {
         const jsonResponse = await response.json();
         if (response.status === 200){
             if(!jsonResponse.status_code){
-
                 setPhotosNamesHashed(jsonResponse.message.photos);
                 setEvent(jsonResponse.message);
             }
@@ -78,12 +78,18 @@ export const EventView = (props) => {
         <form onSubmit = {onSubmit}>
             
             <Container spacing={12}  sx={{ width: '80%' }} id="formWrapper">
-                <Grid container item xs={1} className={"buttonClass"} marginBottom={5}>
+                <Grid container item xs={4} md={1} className={"buttonClass"} marginBottom={5}>
                         <Button type="button" variant="contained" color="error"   onClick={goBackToHome}>Back</Button>
                 </Grid>
                 <Grid container item xs={12}>
-                    <Grid container item xs={6} sx={{marginRight:"2rem"}}>
-                        <Carousel sx={{width:"80%", margin:"auto", justifyContent:"center"}}>
+                    <Grid 
+                        className="carouselContainer"
+                        container 
+                        item 
+                        xs={12} 
+                        md={6} 
+                    >
+                        <Carousel className = "photoCarouselResponsive">
                             {
                                 photosNamesHashed.map((slideImage, index) => {
                                     return(
@@ -102,7 +108,7 @@ export const EventView = (props) => {
                         </Carousel>
                     </Grid>
                     
-                    <Grid container item xs={5} className={"LogoContainer"} >
+                    <Grid container item xs={12} md={5} className={"LogoContainer"} >
                         <Grid container item xs={12} sx={{borderBottom:"1px solid black", marginBottom:"1.5rem"}}>
                             <h1 sx={{fontWeight:"bold", wordWrap:"break-word"}}>{event.name}</h1>
                         </Grid>   
@@ -117,6 +123,11 @@ export const EventView = (props) => {
                         <Grid container item xs={12} sx={{marginTop:"1.5rem"}}>
                             <Container sx={{textAlign:"left", border:"1px solid gray", borderRadius:"10px", backgroundColor:"lightgray", paddingTop:"5px"}}>
                                 <p style={{wordWrap:"break-word"}}>{event.description}</p> 
+                            </Container>
+                        </Grid> 
+                        <Grid container item xs={12} sx={{marginTop:"1.5rem"}}>
+                            <Container sx={{textAlign:"left"}}>
+                                <p style={{wordWrap:"break-word"}}>{event.eventDate}</p> 
                             </Container>
                         </Grid> 
                         <Grid container item xs={12} sx={{marginTop:"1.5rem"}}>

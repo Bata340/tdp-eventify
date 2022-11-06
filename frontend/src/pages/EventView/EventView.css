@@ -1,0 +1,19 @@
+.photoCarouselResponsive{
+    width:80% !important;
+    margin:"auto" !important;
+    justify-content:"center" !important;
+}
+
+.carouselContainer{
+    margin-right:2rem;
+}
+
+@media (max-width: 600px){
+    .photoCarouselResponsive{
+        width:100% !important;
+    }
+
+    .carouselContainer{
+        margin-right: auto;
+    }
+}

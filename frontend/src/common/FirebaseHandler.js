@@ -15,7 +15,7 @@ const firebaseConfig = {
     storageBucket: "eventify-34ac6.appspot.com",
     messagingSenderId: "259623971337",
     appId: "1:259623971337:web:2dc25c7efd9e2a2aff66d8"
-};
+  };
 
 // Initialize Firebase
 export const firebaseApp = initializeApp(firebaseConfig);

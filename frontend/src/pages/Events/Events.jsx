@@ -74,14 +74,16 @@ export const Events = () => {
   return (    
       !loading ? 
       <Container>
-          <Grid container>
+          <Grid container spacing={6}>
               
               {eventos.map( (prop, idx) => {
                   return (
                       <Grid 
                           style={{"marginTop":"2rem"}} 
                           item 
-                          xs={4} 
+                          xs={12}
+                          md={6}
+                          lg={4} 
                           key={`${prop.key}_${urlsImages[idx]}`} 
                           onClick={() => {routeChange(prop)}}
                           className = {"eventCard"}

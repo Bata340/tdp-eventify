@@ -1,0 +1,14 @@
+.uploadForm{
+    max-width: 600px !important;
+}
+
+@media (max-width: 600px){
+    .uploadForm{
+        max-width: 90vw !important;
+        justify-content: center;
+    }
+
+    .inputStyle{
+        width: 90%;
+    }
+}
