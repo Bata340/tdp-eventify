@@ -36,6 +36,8 @@ class EventPatch(BaseModel):
     description: Optional[str] = None
     maxAvailability: Optional[int] = None
     location: Optional[str] = None
+     maxAvailability: Optional[List[int]] = None 
+    eventDates: Optional[List[datetime]] = None
     photos: Optional[List[str]] = None
 
 class Reservation(BaseModel):

@@ -24,6 +24,14 @@ registeredEvents = {}
 
 reservedEvents = {}
 
+def thereIsAvailabilityLeft(event, dateIndex):
+    if event.maxAvailability is None:
+        return True 
+    if len(reservedEvents[event.key]) < event.maxAvailability[dateIndex]:
+        return True
+    return False
+
+
 def filterEventsByOwner(events, owner):
     ownersRegistryList = []
     for key in events:
@@ -138,13 +146,11 @@ async def reserveEvent(id: str, reservation: schema.Reservation):
 
     dateIndex = event.eventDates.index(reservation.dateReserved)
 
-    if event.maxAvailability is not None and event.maxAvailability[dateIndex] == 0:
+    if event.maxAvailability is not None and not thereIsAvailabilityLeft(event, dateIndex):
         return HTTPException(status_code=404, detail="Event with id " + id + " has no more availability for " + reservation.dateReserved.strftime("%Y/%m/%d"))
 
     reservation.id = str(uuid.uuid4())
     reservedEvents[id].append(reservation)
-    if registeredEvents[id].maxAvailability is not None:
-        registeredEvents[id].maxAvailability[dateIndex] -= 1
     
     return {"message": "Reservation " + reservation.id  + " was requested  in event " + id + " for " + reservation.dateReserved.strftime("%Y/%m/%d")}
 
