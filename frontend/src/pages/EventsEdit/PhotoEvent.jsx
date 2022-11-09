@@ -39,7 +39,7 @@ export const PhotoEvent = (props) => {
             justifyContent="center"
             spacing={2}
           >
-            <Grid item xs={12} style={{ display: props.read != undefined? 'none': 'flex'}}>
+            <Grid item xs={12} style={{ display: props.read !== undefined? 'none': 'flex'}}>
               <Button size="small" onClick={() => setOpenDialog(true)} variant="contained" color="error">Delete Image</Button>
             </Grid>
           </Grid>

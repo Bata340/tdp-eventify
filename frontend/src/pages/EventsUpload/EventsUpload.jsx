@@ -20,7 +20,7 @@ export const EventsUpload = (props) => {
     const [maxCapacity, setMaxCapacity] = useState(null);
     const [description, setDescription] = useState('');
     const [eventDates, setEventDates] = useState([]);
-    const [setPhotosNamesHashed] = useState([]);
+    const [photosNamesHashed, setPhotosNamesHashed] = useState([]);
     const [photosUpload, setPhotosUpload] = useState([]);
     const [fileInputShow, setFileInputShow] = useState("");
     const [showErrorEventUpload, setShowErrorEventUpload] = useState(false);
