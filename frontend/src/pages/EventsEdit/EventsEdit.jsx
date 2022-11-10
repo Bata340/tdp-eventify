@@ -108,7 +108,9 @@ export const EventsEdit = (props) => {
                 price: price,
                 description: description,
                 location: location,
-                photos: photosNames
+                photos: photosNames,
+                maxAvailability: maxCapacity,
+                eventDates: eventDates
             })
         };
         const url = `${API_URL}/event/${searchParams.get("id")}`;

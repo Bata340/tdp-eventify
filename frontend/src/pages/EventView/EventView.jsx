@@ -26,10 +26,14 @@ export const EventView = (props) => {
 
     const isInvalidDate = (date) => {
         const dateAsYMD = date.toISOString().substr(0,10);
-        const existingDate = event.eventDates.filter(eventDate => eventDate.substr(0,10) === dateAsYMD);
         const todayDate = new Date();
         todayDate.setDate(todayDate.getDate() - 1);
-        return (date < todayDate || existingDate.length <= 0)
+        if ( event.eventDates.length > 0 ){
+            const existingDate = event.eventDates.filter(eventDate => eventDate.substr(0,10) === dateAsYMD);
+            return (date < todayDate || existingDate.length <= 0)
+        }else{
+            return date < todayDate;
+        }
     }
 
 

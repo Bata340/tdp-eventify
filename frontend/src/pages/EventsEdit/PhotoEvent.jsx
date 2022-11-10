@@ -53,7 +53,7 @@ export const PhotoEvent = (props) => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Delete this photo?"}
+          Delete this photo?
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">

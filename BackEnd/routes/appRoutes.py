@@ -124,14 +124,13 @@ async def editEvent(id: str, event: schema.EventPatch):
 
 @router.delete("/event/{eventId}/photos/{photoId}")
 async def deleteEventPhotos(eventId: str, photoId: str):
-    if id not in registeredEvents.keys():
+    if eventId not in registeredEvents.keys():
         return HTTPException(status_code=404, detail="Event with id " + eventId + " does not exist")
-
-    event = registeredEvents[id]
-    if id not in event.photos.keys():
+    event = registeredEvents[eventId]
+    if photoId not in event.photos:
         return HTTPException(status_code=404, detail="Photo with id " + photoId + " does not exist")
 
-    event.photos.pop(event.photos.index(photoId), None)
+    event.photos.pop(event.photos.index(photoId))
     return {"message" : "ok"}
     
 @router.post("/event/reserve/{id}")
