@@ -27,7 +27,19 @@ export const EventPayments = () => {
                 for ( let i=0; i<keys.length; i++){
                     for( let j=0; j<jsonResponse[keys[i]].paymentsReceived.length; j++){
                         const dateToUse = new Date(jsonResponse[keys[i]].paymentsReceived[j].date_of_payment);
-                        jsonResponse[keys[i]].paymentsReceived[j].dateTransformed = `${dateToUse.getDate()}/${dateToUse.getMonth()+1}/${dateToUse.getFullYear()} - ${dateToUse.getHours()}:${dateToUse.getMinutes().length === 2? dateToUse.getMinutes() : "0"+dateToUse.getMinutes()}:${dateToUse.getSeconds()}`
+                        jsonResponse[keys[i]].paymentsReceived[j].dateTransformed = `${
+                            dateToUse.getDate() >= 10 ? dateToUse.getDate() : "0"+dateToUse.getDate()
+                        }/${
+                            dateToUse.getMonth()+1 >= 10 ? dateToUse.getMonth()+1 : "0"+dateToUse.getMonth()+1
+                        }/${
+                            dateToUse.getFullYear()
+                        } - ${
+                            dateToUse.getHours() >= 10 ? dateToUse.getHours() : "0"+dateToUse.getHours()
+                        }:${
+                            dateToUse.getMinutes() >= 10 ? dateToUse.getMinutes() : "0"+dateToUse.getMinutes()
+                        }:${
+                            dateToUse.getSeconds() >= 10 ? dateToUse.getSeconds() : "0"+dateToUse.getSeconds()
+                        }`
                         arrayPayments.push({"event_name":jsonResponse[keys[i]].name, "payment":jsonResponse[keys[i]].paymentsReceived[j]})
                     }
                 }
