@@ -1,4 +1,5 @@
-import { Button, Container, Grid, Rating, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, TextField } from '@mui/material';
+import { Button, Container, Grid, Rating, Dialog, DialogTitle, DialogContent, DialogContentText, 
+    DialogActions, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PhotoEvent } from '../EventsEdit/PhotoEvent';
@@ -8,6 +9,7 @@ import startOfDay from "date-fns/startOfDay";
 import Carousel from 'react-material-ui-carousel';
 import './EventView.css';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import { PaymentDialog } from "../../common/BookingDialog/PaymentDialog";
 
 export const EventView = (props) => {
 
@@ -15,7 +17,6 @@ export const EventView = (props) => {
     const [photosNamesHashed, setPhotosNamesHashed] = useState([]);
     const [bookingDate, setBookingDate] = useState(null);
     const [event, setEvent] = useState('');
-    const [showDialog, setShowDialog] = useState(false);
     const [showSureBookingDialog, setShowSureBookingDialog] = useState(false);
     const [errorDialog, setErrorDialog] = useState("");
     const [showErrorDialog, setShowErrorDialog] = useState(false);
@@ -37,7 +38,7 @@ export const EventView = (props) => {
     }
 
 
-    const onSubmit = async () => {
+    const onSubmit = async (typeOfCard) => {
         if(!bookingDate){
             setErrorDialog("You must select a booking date before continuing.");
             setShowErrorDialog(true);
@@ -53,6 +54,7 @@ export const EventView = (props) => {
                 "id":searchParams.get("id"),
                 "userid": localStorage.getItem("username"),
                 "dateReserved": bookingDate.toISOString(),
+                "typeOfCard": typeOfCard
             })
         };
         const url = `${API_URL}/event/reserve/${searchParams.get("id")}`;
@@ -63,9 +65,12 @@ export const EventView = (props) => {
         const jsonResponse = await response.json();
         if (response.status === 200){
             if(!jsonResponse.status_code){
-                setShowDialog(true);
+                window.dispatchEvent(new Event('payment'));
+                return;
             }
+            throw new Error("Status Code Error: " + jsonResponse.status_code+ ". Detail: " + jsonResponse.detail);
         }
+        throw new Error("Status Code Error:" + response.status);
     }
 
     const goBackToHome = (event) => {
@@ -201,69 +206,25 @@ export const EventView = (props) => {
                 </Grid>
             </Container>
         </form>
+        <PaymentDialog open={showSureBookingDialog} setOpen={setShowSureBookingDialog} paymentFunction={onSubmit} typeOfBooking={"event"} />
         <Dialog
-            open={showDialog}
-            onClose={goBackToHome}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-        >
-            <DialogTitle id="alert-dialog-title">
-            {"Booking was succesful"}
-            </DialogTitle>
-            <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-                You have booked this event succesfully. 
-                <br/>
-                <br/><br/>
-                We will return you to the homepage after closing this dialog.
-            </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-            <Button onClick={goBackToHome}>OK</Button>
-            </DialogActions>
-      </Dialog>
-      <Dialog
-            open={showSureBookingDialog}
-            onClose={() => setShowSureBookingDialog(false)}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-        >
-            <DialogTitle id="alert-dialog-title">
-            {`Are you sure you want to book?`}
-            </DialogTitle>
-            <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-                Are you sure you want to book the event: <strong>{event.name}</strong> ?
-                <br/>
-                For this date: <strong>{bookingDate?`${bookingDate.getDate()}/${bookingDate.getMonth()+1}/${bookingDate.getFullYear()}`:null}</strong>.
-                <br/>
-                <br/>
-                <strong>This can not be reverted afterwards.</strong>
-            </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={onSubmit}>OK</Button>
-                <Button onClick={() => setShowSureBookingDialog(false)}>Cancel</Button>
-            </DialogActions>
-      </Dialog>
-      <Dialog
-            open={showErrorDialog}
-            onClose={() => setShowErrorDialog(false)}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-        >
-            <DialogTitle id="alert-dialog-title">
-                Error
-            </DialogTitle>
-            <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-                {errorDialog}
-            </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={() => setShowErrorDialog(false)}>OK</Button>
-            </DialogActions>
-      </Dialog>
+                open={showErrorDialog}
+                onClose={() => setShowErrorDialog(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    Error
+                </DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    {errorDialog}
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setShowErrorDialog(false)}>OK</Button>
+                </DialogActions>
+        </Dialog>
     </>
   )
 }

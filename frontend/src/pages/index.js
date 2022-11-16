@@ -7,3 +7,5 @@ export * from './Events/MyEvents';
 export * from './Events/MyEvent';
 export * from './EventsUpload/EventsUpload';
 export * from './EventsEdit/EventsEdit';
+export * from './MyEventsBought/MyEventsBought';
+export * from './EventPayments/EventPayments';

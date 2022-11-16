@@ -18,6 +18,8 @@ function isLoggedIn(){
 export const NavBar = () => {
 
     const [isLoggedInSt, setIsLoggedInSt] = useState(isLoggedIn());
+    const [money, setMoney] = useState(0);
+    const API_URL = 'http://localhost:8000';
 
 
     function logout(){
@@ -25,6 +27,7 @@ export const NavBar = () => {
         localStorage.removeItem("user");
         localStorage.removeItem("username");
         setIsLoggedInSt(false);
+        window.location.reload();
     }
 
 
@@ -32,9 +35,38 @@ export const NavBar = () => {
         const handleStorage = () => {
             setIsLoggedInSt(isLoggedIn());
         }
+
+        const retrieveMoney = async () => {
+            const paramsGet = {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            };
+            const url = `${API_URL}/users/${localStorage.getItem("username")}`;
+            const response = await fetch(
+                url,
+                paramsGet
+            );
+            const jsonResponse = await response.json();
+            if (response.status === 200){
+                if(!jsonResponse.status_code){
+                    setMoney(jsonResponse.message.money);
+                }
+            }
+        }
+
+        setIsLoggedInSt(isLoggedIn());
+        if(isLoggedInSt){
+            retrieveMoney();
+        }
     
         window.addEventListener('storage', handleStorage);
-        return () => window.removeEventListener('storage', handleStorage());
+        window.addEventListener('payment', retrieveMoney);
+        return () => {
+            window.removeEventListener('storage', handleStorage); 
+            window.removeEventListener('payment', retrieveMoney);
+        };
     }, []);
 
 
@@ -62,6 +94,9 @@ export const NavBar = () => {
                             <NavDropdown.Item href="/my-events" className="eventItem">
                                 Manage My Schedule
                             </NavDropdown.Item>
+                            <NavDropdown.Item href="/events/payments-received" className="eventItem">
+                                Watch My Payments
+                            </NavDropdown.Item>
                         </NavDropdown>
                     
                         <NavDropdown
@@ -80,9 +115,12 @@ export const NavBar = () => {
                 </Nav>
                 <Nav className="ms-auto">
                     {isLoggedInSt ? 
-                        <Button id="button-logout" variant="danger" onClick = {logout}>
-                            <strong>Logout</strong>
-                        </Button>
+                        <>
+                            <p id="money-navbar">Amount: U$D {money}</p>
+                            <Button id="button-logout" variant="danger" onClick = {logout}>
+                                <strong>Logout</strong>
+                            </Button> 
+                        </>
                         :
                         <Button id="button-login" variant="primary" href="/login">
                             <strong>Login</strong>

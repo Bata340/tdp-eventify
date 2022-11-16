@@ -12,6 +12,7 @@ class User(BaseModel):
     phone_number : Union[str, None] = None
     location: str
     login: bool
+    money: Optional[float]
 
 class UserLogin(BaseModel):
     username: str
@@ -28,6 +29,7 @@ class Event(BaseModel):
     maxAvailability: Optional[int] = None #cupos. si es None es porque son ilimitados. Los cupos deberían ser los cupos para cada fecha.
     eventDates: Optional[List[datetime]] = None #Si la lista está vacía o es null, entonces puede hacerse todos los días.
     photos: Union[List[str], None] = None
+    paymentsReceived: Optional[List]
 
 
 class EventPatch(BaseModel):
@@ -42,5 +44,7 @@ class EventPatch(BaseModel):
 
 class Reservation(BaseModel):
     id: Optional[str]
+    event_id: Optional[str]
     userid: str
     dateReserved: datetime
+    typeOfCard: str

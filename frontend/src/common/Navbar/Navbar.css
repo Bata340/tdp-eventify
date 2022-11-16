@@ -76,8 +76,19 @@ a.dropdown-toggle{
     border-color: #0B5ED7;
 }
 
+#money-navbar{
+    margin-top: 1rem;
+    margin-left: 1rem;
+}
+
 @media(min-width: 720px){
     #button-logout, #button-login{
         margin-right:10px;
+    }
+
+    #money-navbar{
+        margin-right: 2rem;
+        
+        margin-left: auto;
     }
 }
