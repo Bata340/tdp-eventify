@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Image, Text, View, Alert } from 'react-native';
+import { KeyboardAvoidingView, Image, Text, View, Alert, ScrollView } from 'react-native';
 import EventifyTextInput from '../components/EventifyTextInput';
 import Colors from '../constants/Colors';
 import Fontisto from '@expo/vector-icons/Fontisto';
@@ -38,31 +38,34 @@ export default function LoginScreen({ route, navigaton }) {
     }
 
     return (
-        <KeyboardAvoidingView 
-            style={{ width: '100%', height: '100%', alignContent: 'center', display: 'flex' }}
-            behavior="padding"
-        >
-            <View style={{ flex: 4, backgroundColor: Colors.PRIMARY_DARKER, alignItems: 'center', justifyContent: 'center', paddingBottom: 20 }}>
-                <Image source={EventifyLogo} style={{ height: 150, resizeMode: 'contain' }} />
-            </View>
-            <View style={{ flex: 6, backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, paddingVertical: 20, paddingHorizontal: 15 }}>
-                <Text style={{ color: Colors.WHITE, fontWeight: 'bold', fontSize: 40, marginBottom: 10 }}>Bienvenido</Text>
-                <Text style={{ color: Colors.GRAY, fontSize: 20 }}>Ingresa tus datos para continuar</Text>
-
-                <View style={{ backgroundColor: Colors.PRIMARY_DARK_GRAYED, borderRadius: 20, padding: 15, paddingBottom: 0, marginTop: 20 }}>
-                    <EventifyTextInput value={emailInput} onChangeText={setEmailInput} name="Correo electronico" autoCapitalize={false} leftIcon={<Fontisto name="email" color={Colors.GRAY} size={23} />} inputTextColor={Colors.GRAY} fontSize={23} placeholderTextColor={Colors.GRAY} keyboardType="email-address" />
-                    <EventifyTextInput value={passwordInput} onChangeText={setPasswordInput} name="Clave" autoCapitalize={false} leftIcon={<Ionicons name="md-key-outline" color={Colors.GRAY} size={23} />} inputTextColor={Colors.GRAY} fontSize={23} placeholderTextColor={Colors.GRAY} isPassword={true} />
-                    <View style={{ width: '100%', height: 30 }}>
-                        <Button onPress={tryLogin} buttonStyle={{ alignSelf: 'center', position: 'absolute', top: -10 }} title="INGRESAR" type="medium" titleSize={25} titleColor={Colors.WHITE} color={Colors.PRIMARY} />
-                    </View>
+        <ScrollView>
+            <KeyboardAvoidingView 
+                style={{ width: '100%', height: '100%', alignContent: 'center', display: 'flex' }}
+                behavior="padding"
+            >
+                <View style={{ flex: 4, backgroundColor: Colors.PRIMARY_DARKER, alignItems: 'center', justifyContent: 'center', paddingBottom: 20, paddingTop:40 }}>
+                    <Image source={EventifyLogo} style={{ height: 150, resizeMode: 'contain' }} />
                 </View>
+                <View style={{ flex: 6, backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, paddingVertical: 20, paddingHorizontal: 15 }}>
+                    <Text style={{ color: Colors.WHITE, fontWeight: 'bold', fontSize: 40, marginBottom: 10 }}>Bienvenido</Text>
+                    <Text style={{ color: Colors.GRAY, fontSize: 20 }}>Ingresa tus datos para continuar</Text>
 
-               <View style={{ width: '100%', alignItems: 'center', marginTop: 70 }}>
-                    <Text style={{ color: Colors.WHITE, fontWeight: 'bold', fontSize: 23, marginBottom: 40 }}>Olvidaste tu clave?</Text>
-                    <Text style={{ color: Colors.PRIMARY_GRAYED, fontSize: 20, marginBottom: 15 }}>Aun no estas registrado?</Text>
-                    <Text style={{ color: Colors.PRIMARY_VERY_LIGHT, fontWeight: 'bold', fontSize: 26 }} >Registrate</Text>
-               </View>
-            </View>
-        </KeyboardAvoidingView>
+                    <View style={{ backgroundColor: Colors.PRIMARY_DARK_GRAYED, borderRadius: 20, padding: 15, paddingBottom: 0, marginTop: 20 }}>
+                        <EventifyTextInput value={emailInput} onChangeText={setEmailInput} name="Correo electronico" autoCapitalize={false} leftIcon={<Fontisto name="email" color={Colors.GRAY} size={23} />} inputTextColor={Colors.GRAY} fontSize={23} placeholderTextColor={Colors.GRAY} keyboardType="email-address" />
+                        <EventifyTextInput value={passwordInput} onChangeText={setPasswordInput} name="Clave" autoCapitalize={false} leftIcon={<Ionicons name="md-key-outline" color={Colors.GRAY} size={23} />} inputTextColor={Colors.GRAY} fontSize={23} placeholderTextColor={Colors.GRAY} isPassword={true} />
+                        <View style={{ width: '100%', height: 30 }}>
+                            <Button onPress={tryLogin} buttonStyle={{ alignSelf: 'center', position: 'absolute', top: -10 }} title="INGRESAR" type="medium" titleSize={25} titleColor={Colors.WHITE} color={Colors.PRIMARY} />
+                        </View>
+                    </View>
+
+                <View style={{ width: '100%', alignItems: 'center', marginTop: 70 }}>
+                        <Text style={{ color: Colors.WHITE, fontWeight: 'bold', fontSize: 23, marginBottom: 40 }}>Olvidaste tu clave?</Text>
+                        <Text style={{ color: Colors.PRIMARY_GRAYED, fontSize: 20, marginBottom: 15 }}>Aun no estas registrado?</Text>
+                        <Text style={{ color: Colors.PRIMARY_VERY_LIGHT, fontWeight: 'bold', fontSize: 26 }} >Registrate</Text>
+                </View>
+                </View>
+            
+            </KeyboardAvoidingView>
+        </ScrollView>
     )
 }

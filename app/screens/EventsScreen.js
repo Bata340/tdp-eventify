@@ -37,21 +37,25 @@ export default function EventsScreen({ route, navigaton }) {
                 <View style={{ display: 'flex', flexDirection: 'row', marginTop: 20 }}>
                     <View style={{ flex: 1, marginRight: 10 }}>
                         <Button
-                            title="Eventos populares"
+                            title={"EVENTOS\nPOPULARES"}
                             color={Colors.PRIMARY}
                             titleColor={Colors.WHITE}
                             titleSize={16}
-                            titleStyle={{ fontWeight: "bold" }}
+                            titleStyle={{ fontWeight: "bold", textAlign:"center" }}
+                            style={{width: "100%"}}
+                            numOfLines={2}
                         />
                     </View>
                     <View style={{ flex: 1 }}>
                         <Button
-                            title="Eventos cercanos"
+                            numberOfLines={2}
+                            title={"EVENTOS\nCERCANOS"}
                             color={Colors.PRIMARY}
                             titleColor={Colors.WHITE}
                             titleSize={16}
-                            titleStyle={{ fontWeight: "bold" }}
+                            titleStyle={{ fontWeight: "bold", textAlign:"center" }}
                             inactive={true}
+                            numOfLines={2}
                         />
                     </View>
                 </View>

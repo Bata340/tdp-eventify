@@ -60,7 +60,7 @@ export default function EventCard({
                 </TouchableOpacity>
             </View>
             <TouchableOpacity 
-                style={{ borderRadius: 20, width: '80%', height: 100, marginTop: '-15%', marginBottom: 20, backgroundColor: Colors.PRIMARY_DARK_GRAYED, padding: '3%', display: 'flex', flexDirection: 'row' }}
+                style={{ borderRadius: 20, width: '80%', marginTop: '-15%', marginBottom: 20, backgroundColor: Colors.PRIMARY_DARK_GRAYED, padding: '3%', display: 'flex', flexDirection: 'row' }}
                 onPress={onCardPress}
             >
                 <View style={{ flex: 7 }}>

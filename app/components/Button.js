@@ -12,7 +12,8 @@ export default function Button({
     color = Colors.PRIMARY_LIGHT,
     buttonStyle = {},
     inactive = false,
-    type = "small" //"small", "medium", "large"
+    type = "small", //"small", "medium", "large"
+    numOfLines = 1
 }) {
     const underlayColor = shade(color, 0.4);
 
@@ -59,15 +60,15 @@ export default function Button({
 
     return (
         <TouchableHighlight 
-            style={[{ borderRadius: '50%', paddingVertical: '7%', justifyContent: 'center', alignSelf: 'center', paddingHorizontal: getHorizontalPadding(), backgroundColor: inactive ? 'transparent' : color, alignItems: 'center' }, {...buttonStyle}]}
+            style={[{ borderRadius: 50, paddingVertical: '7%', justifyContent: 'center', alignSelf: 'center', paddingHorizontal: getHorizontalPadding(), backgroundColor: inactive ? 'transparent' : color, alignItems: 'center' }, {...buttonStyle}]}
             onPress={onPress}
             disabled={disabled}
             underlayColor={underlayColor}
         >
             {inactive ? 
-                <Text numberOfLines={1} style={[{ color: Colors.PRIMARY_DARK_GRAYED, fontSize: titleSize }, { ...titleStyle }]}>{title}</Text>
+                <Text numberOfLines={numOfLines} style={[{ color: Colors.PRIMARY_DARK_GRAYED, fontSize: titleSize}, { ...titleStyle }]}>{title}</Text>
             :
-                <Text numberOfLines={1} style={[{ color: titleColor, fontSize: titleSize, fontWeight: 'bold' }, { ...titleStyle }]}>{title}</Text>
+                <Text numberOfLines={numOfLines} style={[{ color: titleColor, fontSize: titleSize, fontWeight: 'bold'}, { ...titleStyle }]}>{title}</Text>
             }
 
         </TouchableHighlight>

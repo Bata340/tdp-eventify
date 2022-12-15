@@ -16,6 +16,7 @@ import { StatusBar } from 'expo-status-bar';
 import { GlobalAuthContext, GlobalAuthActionsContext } from './utils/ContextFactory';
 import Session from './utils/Session';
 import EventDetailScreen from './screens/EventDetailScreen';
+import AddEventScreen from './screens/AddEventScreen';
 
 LogBox.ignoreAllLogs();
 
@@ -84,7 +85,7 @@ function AuthenticatedBottomTab() {
       />
       <AuthTab.Screen
         name="AddEvent"
-        component={SettingsScreen}
+        component={AddEventScreen}
         options={{
 					tabBarButton: (props) => <TabBarFloatingButton {...props} />
 				}}
