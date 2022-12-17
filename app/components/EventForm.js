@@ -1,9 +1,39 @@
 import { useEffect, useState } from 'react';
-import { TextInput, View, StyleSheet } from "react-native"
+import { TextInput, View, StyleSheet, Text, TouchableOpacity, Image } from "react-native"
 import Colors from '../constants/Colors';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Button from './Button';
+import * as ImagePicker from 'expo-image-picker';
+import { Picker } from "@react-native-picker/picker";
+
+
+const categories = [
+    {
+        "name": "Recital",
+        "value": "recital",
+    },
+    {
+        "name": "Cine",
+        "value": "cine",
+    },
+    {
+        "name": "Boliche",
+        "value": "boliche",
+    },
+    {
+        "name": "Teatro",
+        "value": "teatro",
+    },
+    {
+        "name": "Evento Privado",
+        "value": "evento_privado",
+    },
+    {
+        "name": "Otro...",
+        "value": "otro",
+    }
+]
 
 
 export default function EventForm ({
@@ -50,10 +80,67 @@ export default function EventForm ({
         maxAvaiability: "",
         showHourPicker: false,
         showDatePicker: false,
+        eventImage: null,
+        typeOfEvent: "recital"
     });
+
+
+    const handleGallery = async () => {
+        const res = await ImagePicker.launchImageLibraryAsync(
+            {
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+            }
+        );
+        if (!res.canceled) {
+            console.log(res.assets[0]);
+            setStateForm({...stateForm, eventImage: res.assets[0]});
+        }
+    }
+
 
     return (
         <View style={styles.container}>
+            <TouchableOpacity 
+                style={{...styles.inputContainer, alignItems:"center", justifyContent:"center", borderStyle: "dashed", borderWidth: 1, borderColor: Colors.WHITE, overflow:"hidden"}}
+                onPress={handleGallery}
+            >
+                {
+                stateForm.eventImage ?
+                    <Image
+                        style = {{
+                            width: '100%',
+                            height: undefined,
+                            aspectRatio: 16/9,
+                        }}
+                        source = {stateForm.eventImage}
+                    />
+                :  
+                    <>
+                        <Ionicons color={Colors.WHITE} size={35} name={"image-outline"}/>
+                        <Text style={{color: "white", textAlign: "center", fontWeight: "bold"}}>
+                            Presiona para subir una imagen...
+                        </Text>
+                    </>
+                }
+            </TouchableOpacity>
+            <View style={styles.inputContainer}>
+                <Text style={{color: "black", fontWeight:"bold", borderBottomWidth:1}}>Categoría del evento:</Text>
+                <Picker
+                    style={styles.textInput}
+                    selectedValue={stateForm.typeOfEvent}
+                    onValueChange={(itemValue, itemIndex)=>setStateForm({...stateForm, typeOfEvent: itemValue})}
+                    placeholder="Categoria"
+                >
+                    {categories.map((category) => {
+                        return(
+                            <Picker.Item label={category.name} value={category.value} />
+                        )
+                    })}
+                </Picker>
+            </View>
             <View style={styles.inputContainer}>
                 <TextInput
                     style={styles.textInput}

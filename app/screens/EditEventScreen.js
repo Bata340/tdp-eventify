@@ -4,12 +4,12 @@ import Colors from '../constants/Colors';
 import ScreenTitle from '../components/ScreenTitle';
 
 
-export default function AddEventScreen () {
+export default function EditEventScreen () {
     return (
         <View style={{ backgroundColor: Colors.PRIMARY_VERY_DARK, paddingBottom: 50, paddingTop: 100 }}>
-            <ScreenTitle title="CREA TU EVENTO" />
+            <ScreenTitle title="EDITA TU EVENTO" />
             <ScrollView >
-                <EventForm />
+                <EventForm getPrevData={true}/>
             </ScrollView>
         </View>
     );

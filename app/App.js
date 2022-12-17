@@ -87,7 +87,8 @@ function AuthenticatedBottomTab() {
         name="AddEvent"
         component={AddEventScreen}
         options={{
-					tabBarButton: (props) => <TabBarFloatingButton {...props} />
+					tabBarButton: (props) => <TabBarFloatingButton {...props} />,
+          headerShown: false
 				}}
       />
       <AuthTab.Screen
