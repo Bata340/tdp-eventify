@@ -33,7 +33,7 @@ const categories = [
         "name": "Otro...",
         "value": "otro",
     }
-]
+];
 
 
 export default function EventForm ({
@@ -194,6 +194,7 @@ export default function EventForm ({
                             onChange={(event) => setStateForm({...stateForm, eventDate: new Date(event.nativeEvent.timestamp), showDatePicker: false})}
                             placeholder="Fecha y hora..."
                             mode="date"
+                            minimumDate={new Date()}
                         /> : null
                     }
                 </View>
@@ -216,6 +217,7 @@ export default function EventForm ({
                             onChange={(event) => setStateForm({...stateForm, hour: new Date(event.nativeEvent.timestamp).toLocaleTimeString().substr(0,5), showHourPicker: false})}
                             placeholder="Fecha y hora..."
                             mode="time"
+                            minimumDate={new Date()}
                         /> : null
                     }
                 </View>
