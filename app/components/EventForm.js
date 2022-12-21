@@ -52,7 +52,7 @@ export default function EventForm ({
             justifyContent: 'center',
             alignItems: 'center',
             backgroundColor: Colors.PRIMARY_VERY_DARK,
-            paddingBottom: 20
+            paddingBottom: 100
         },
         inputContainer: {
             backgroundColor: Colors.PRIMARY_DARK,
@@ -77,11 +77,11 @@ export default function EventForm ({
         location: "",
         eventDate: new Date(),
         hour: "",
-        maxAvaiability: "",
         showHourPicker: false,
         showDatePicker: false,
         eventImage: null,
-        typeOfEvent: "recital"
+        typeOfEvent: "recital",
+        maxCapacity: "",
     });
 
 
@@ -153,7 +153,20 @@ export default function EventForm ({
                 
                 <TextInput
                     style={styles.textInput}
-                    value={stateForm.price.toString()}
+                    value={stateForm.maxCapacity > 0 ? stateForm.maxCapacity.toString(): ""}
+                    onChangeText={(text)=> {setStateForm({...stateForm, maxCapacity: Math.floor(text)});}}
+                    keyboardType="numeric"
+                    placeholder="Capacidad Máxima... (Opcional)"
+                />
+                <View style={{ justifyContent: 'center', position: 'absolute', right: 15, alignContent: 'center' }}>
+                    <Ionicons name={"people-outline"} color={Colors.BLACK} size={35} />
+                </View>
+            </View>
+            <View style={{...styles.inputContainer, ...styles.iconInputContainer}}>
+                
+                <TextInput
+                    style={styles.textInput}
+                    value={stateForm.price > 0 ? stateForm.price.toString() : ""}
                     onChange={(event)=> setStateForm({...stateForm, price: parseFloat(event.nativeEvent.text).toFixed(2).toString()})}
                     keyboardType="numeric"
                     placeholder="Precio..."

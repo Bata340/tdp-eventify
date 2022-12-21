@@ -12,9 +12,9 @@ export default function EventsScreen({ route, navigaton }) {
     const appAuthContext = useGlobalAuthContext();
 
     const events = [
-        { id: 1, name: 'Lollapalooza 2023', image: "https://static.eldiario.es/clip/69d5aa49-6431-4969-9bde-f8b507544124_16-9-discover-aspect-ratio_default_0.jpg", date: '17 Mar, 2023', time: '20:00', location: 'Bernabe Marquez 700, San Isidro' },
-        { id: 2, name: 'BNN', image: "https://exambazaar-2020.s3.amazonaws.com/7840163a82fdf16df256e63fdcbdff21.JPG", date: '03 Dic, 2022', time: '23:00', location: 'Av. Costanera 6201, CABA' },
-        { id: 3, name: 'Opeth', image: "https://cuarteldelmetal.com/wp-content/uploads/2020/07/Opeth-1-1-1.jpg", date: '13 Feb, 2023', time: '19:00', location: 'Av. Rivadavia 7806, CABA' }
+        { id: 1, name: 'Lollapalooza 2023', image: "https://static.eldiario.es/clip/69d5aa49-6431-4969-9bde-f8b507544124_16-9-discover-aspect-ratio_default_0.jpg", date: '17 Mar, 2023', time: '20:00', location: 'Bernabe Marquez 700, San Isidro', description: "Festival de musica con las mejores bandas de rock, punk, indie, electronica y cumbia" },
+        { id: 2, name: 'BNN', image: "https://exambazaar-2020.s3.amazonaws.com/7840163a82fdf16df256e63fdcbdff21.JPG", date: '03 Dic, 2022', time: '23:00', location: 'Av. Costanera 6201, CABA', description: "Joda con las mejores bandas de electronica y cumbia" },
+        { id: 3, name: 'Opeth', image: "https://cuarteldelmetal.com/wp-content/uploads/2020/07/Opeth-1-1-1.jpg", date: '13 Feb, 2023', time: '19:00', location: 'Av. Rivadavia 7806, CABA', description: "Venite a ver a Opeth en vivo!" }
     ];
 
     return (
