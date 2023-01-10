@@ -74,6 +74,7 @@ export default function EventCard({
                         titleColor={Colors.PRIMARY_VERY_DARK_GRAYED}
                         color={Colors.PRIMARY_LIGHT}
                         buttonStyle={{ verticalPadding: 30 }}
+                        onPress = {() => navigation.navigate("EventPayment", { event })}
                     />
                 </View>
             </TouchableOpacity>

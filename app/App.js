@@ -17,6 +17,7 @@ import { GlobalAuthContext, GlobalAuthActionsContext } from './utils/ContextFact
 import Session from './utils/Session';
 import EventDetailScreen from './screens/EventDetailScreen';
 import AddEventScreen from './screens/AddEventScreen';
+import EventPaymentForm from './screens/EventPaymentForm';
 
 LogBox.ignoreAllLogs();
 
@@ -37,6 +38,7 @@ function EventsStack() {
     <EventsStack.Navigator initialRouteName="Events" screenOptions={{ headerShown: false }} >
       <EventsStack.Screen name="Events" component={EventsScreen} headerShown={false} />
       <EventsStack.Screen name="EventDetail" component={EventDetailScreen} headerShown={false} />
+      <EventsStack.Screen name="EventPayment" component={EventPaymentForm} options={{ headerShown: false }} />
     </EventsStack.Navigator>
   )
 }

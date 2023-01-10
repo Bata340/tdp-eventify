@@ -9,6 +9,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 export default function EventDetailScreen({ route, navigation }) {
 
+    const event = route.params?.event;
+
     return (
         <View style={{ flexDirection: 'column', width: '100%', paddingTop: 50, height: '100%', backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, alignContent: 'center' }}>
             <View>
@@ -19,25 +21,32 @@ export default function EventDetailScreen({ route, navigation }) {
                 >
                     <Ionicons name="chevron-back" color={Colors.WHITE} size={32} />
                 </TouchableHighlight>
-                <Image style={{ width: '100%', height: 200, resizeMode: 'cover' }} source={{ uri: route.params?.event.image }} />
+                <Image style={{ width: '100%', height: 200, resizeMode: 'cover' }} source={{ uri: event.image }} />
                 <LinearGradient
                     colors={['transparent', Colors.PRIMARY_VERY_DARK_GRAYED]}
                     style={{ width: '100%', height: 100, position: 'absolute', bottom: 0, marginBottom: -17 }}
                 />
             </View>
             <View style={{ paddingHorizontal: 20 }}>
-                <Text style={{ fontWeight: 'bold', color: Colors.WHITE, fontSize: 35 }}>{route.params?.event.name}</Text>
+                <Text style={{ fontWeight: 'bold', color: Colors.WHITE, fontSize: 35 }}>{event.name}</Text>
             </View>
             <ScrollView style={{ paddingHorizontal: 20 }}>
-                <Text style={{ color: Colors.WHITE, fontSize: 20, marginTop: 15 }}>{route.params?.event.description}</Text>
+                <Text style={{ color: Colors.WHITE, fontSize: 20, marginTop: 15 }}>{event.description}</Text>
                 <View style={{ paddingTop: 10 }}>
-                    <Text style={{ fontWeight: 'bold', color: Colors.WHITE, fontSize: 16, marginTop: 10 }}><Feather name="calendar" /> {route.params?.event.date} {route.params?.event.time}hs</Text>
+                    <Text style={{ fontWeight: 'bold', color: Colors.WHITE, fontSize: 16, marginTop: 10 }}><Feather name="calendar" /> {event.date} {event.time}hs</Text>
                 </View>
                 <View style={{ marginTop: 20, borderRadius: 20, backgroundColor: Colors.PRIMARY_DARK_GRAYED, paddingLeft: 25, paddingVertical: 25 }}>
-                    <Text style={{ fontWeight: 'bold', color: Colors.WHITE, fontSize: 20, marginTop: 5 }}><Entypo size={25} name="address" /> {route.params?.event.location}</Text>
+                    <Text style={{ fontWeight: 'bold', color: Colors.WHITE, fontSize: 20, marginTop: 5 }}><Entypo size={25} name="address" /> {event.location}</Text>
                 </View>
                 <View style={{ marginTop: 20, paddingBottom: 20, width: '100%', alignContent: 'center' }}>
-                    <Button type="large" title="COMPRAR" titleSize={20} />
+                    <Button 
+                        type="large"
+                        title="COMPRAR" 
+                        onPress={() => {
+                            console.log("ASD"); 
+                            navigation.navigate("EventPayment", {event} );
+                        }} 
+                        titleSize={20} />
                 </View>
             </ScrollView>
         </View>
