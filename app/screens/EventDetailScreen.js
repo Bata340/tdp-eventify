@@ -43,7 +43,6 @@ export default function EventDetailScreen({ route, navigation }) {
                         type="large"
                         title="COMPRAR" 
                         onPress={() => {
-                            console.log("ASD"); 
                             navigation.navigate("EventPayment", {event} );
                         }} 
                         titleSize={20} />

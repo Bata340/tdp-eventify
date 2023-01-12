@@ -136,7 +136,7 @@ export default function EventForm ({
                 >
                     {categories.map((category) => {
                         return(
-                            <Picker.Item label={category.name} value={category.value} />
+                            <Picker.Item key = {"key_"+category.value} label={category.name} value={category.value} />
                         )
                     })}
                 </Picker>

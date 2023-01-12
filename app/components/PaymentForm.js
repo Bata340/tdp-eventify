@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import { TextInput, View, StyleSheet, Text, TouchableOpacity, Image } from "react-native"
+import { TextInput, View, StyleSheet, Text } from "react-native"
 import Colors from '../constants/Colors';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Button from './Button';
-import * as ImagePicker from 'expo-image-picker';
+import MaskInput from 'react-native-mask-input';
 import { Picker } from "@react-native-picker/picker";
 
 
@@ -19,10 +18,12 @@ const cardTypes = [
     }
 ];
 
+const maskCVV = [ /\d/, /\d/, /\d/ ];
+const maskCard = [ /\d/, /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/ ];
+const maskExpire = [ /\d/, /\d/, '/', /\d/, /\d/ ];
 
-export default function PaymentForm ({
-    getPrevData = false
-}) {
+
+export default function PaymentForm () {
 
     const fontSize = 14;
 
@@ -57,9 +58,9 @@ export default function PaymentForm ({
     const [stateForm, setStateForm] = useState({
         cardHolderName: "",
         cardType: "debit",
-        cardNumber: "",
-        expireDate: "",
-        cvv: ""
+        cardNumber: {"masked":"", "unmasked":""},
+        expireDate: {"masked":"", "unmasked":""},
+        cvv: {"masked":"", "unmasked": ""}
     });
 
 
@@ -68,6 +69,7 @@ export default function PaymentForm ({
             <View style={styles.inputContainer}>
                 <Text style={{color: "black", fontWeight:"bold", borderBottomWidth:1}}>Tipo de Tarjeta:</Text>
                 <Picker
+                    
                     style={styles.textInput}
                     selectedValue={stateForm.cardType}
                     onValueChange={(itemValue, itemIndex)=>setStateForm({...stateForm, cardType: itemValue})}
@@ -75,7 +77,7 @@ export default function PaymentForm ({
                 >
                     {cardTypes.map((cardType) => {
                         return(
-                            <Picker.Item label={cardType.name} value={cardType.value} />
+                            <Picker.Item key = {"key_"+cardType.value} label={cardType.name} value={cardType.value} />
                         )
                     })}
                 </Picker>
@@ -93,10 +95,11 @@ export default function PaymentForm ({
             </View>
             <View style={{...styles.inputContainer, ...styles.iconInputContainer}}>
                 
-                <TextInput
+                <MaskInput
                     style={styles.textInput}
-                    value={stateForm.maxCapacity > 0 ? stateForm.maxCapacity.toString(): ""}
-                    onChangeText={(text)=> {setStateForm({...stateForm, maxCapacity: Math.floor(text)});}}
+                    value={stateForm.cardNumber.masked}
+                    onChangeText={(masked, unmasked)=> {setStateForm({...stateForm, cardNumber: {"masked": masked, "unmasked": unmasked}});}}
+                    mask={maskCard}
                     keyboardType="numeric"
                     placeholder="Número de Tarjeta"
                 />
@@ -106,11 +109,27 @@ export default function PaymentForm ({
             </View>
             <View style={{ width:"80%", display:"flex", flexDirection:"row", justifyContent:"center", alignItems:"center" }}>
                 <View style={{...styles.inputContainer, ...styles.iconInputContainer, marginRight:10, flex:1}}>
-                    <TextInput
-                        value={stateForm.expireDate}
-                        onChange={(event) => setStateForm({...stateForm, expireDate: event.nativeEvent.text})}
+                    <MaskInput
+                        value={stateForm.expireDate.masked}
+                        onChangeText={(masked, unmasked) => {
+                            let month = parseInt(masked.split("/")[0]);
+                            let year = "";
+                            if(masked.split("/").length > 1){
+                                year = masked.split("/")[1];
+                            }
+                            if (month > 12) month = 12;
+                            if (year != ""){
+                                masked = `${month.toString()}/${year.toString()}`;
+                                unmasked = month.toString()+year.toString();
+                            }else{
+                                masked = month.toString();
+                                unmasked = month.toString();
+                            }
+                            setStateForm({...stateForm, expireDate: {"masked": masked, "unmasked":unmasked}})
+                        }}
                         keyboardType="numeric"
                         placeholder="Vencimiento"
+                        mask={maskExpire}
                         style={styles.textInput}
                     />
                     <View style={{ justifyContent: 'center', position: 'absolute', right: 15, alignContent: 'center' }}>
@@ -118,12 +137,13 @@ export default function PaymentForm ({
                     </View>
                 </View>
                 <View style={{...styles.inputContainer, ...styles.iconInputContainer, flex:1}}>
-                    <TextInput
-                        style={styles.textInput}
-                        value={stateForm.cvv}
+                    <MaskInput
+                        value={stateForm.cvv.masked}
                         keyboardType="numeric"
                         placeholder="CVV"
-                        onChange={(event) => setStateForm({...stateForm, cvv: event.nativeEvent.text})}
+                        style={styles.textInput}
+                        mask={maskCVV}
+                        onChangeText={(masked, unmasked) => setStateForm({...stateForm, cvv: {"masked":masked, "unmasked": unmasked}})}
                     />
                 </View>
             </View>
