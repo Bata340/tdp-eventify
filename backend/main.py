@@ -1,9 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes.appRoutes import router
-
+from routes.appRoutes import router, eventRepository
 
 app = FastAPI()
+
+@app.on_event("shutdown")
+def shutdown_db_client():
+    eventRepository.disconnectDB()
 
 origins = ["*"]
 
