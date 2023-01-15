@@ -117,8 +117,8 @@ async def deleteEvent(id: str):
 @router.patch("/event/{id}", status_code=status.HTTP_200_OK)
 async def editEvent(id: str, eventEdit: schema.EventPatch):
     try: 
-        eventRepository.editEventWithId(id, eventEdit.dict())
-        return {"message" : "ok"}
+        updated_event = eventRepository.editEventWithId(id, eventEdit.dict())
+        return {"message" : updated_event}
     except (exceptions.EventInfoException) as error:
         raise HTTPException(**error.__dict__)
 

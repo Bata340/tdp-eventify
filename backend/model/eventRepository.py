@@ -16,7 +16,7 @@ class EventRepository:
         event = self.database["events"].find_one({"_id": ObjectId(id)})
         if event is  None:
             raise exceptions.EventNotFound
-        return event
+        return json.loads(json_util.dumps(event))
         
     def getEvents(self, owner: Union[str, None] = None):
         filter = {}
@@ -38,13 +38,16 @@ class EventRepository:
         return deleted_event
 
     def editEventWithId(self, id: str, fields: dict):
-        event = self.database["events"].find_one({"_id": id})
+        event = self.database["events"].find_one({"_id": ObjectId(id)})
         if event is None:
             raise exceptions.EventNotFound
+
         update_result = self.database["events"].update_one(
-                {"_id": id}, {"$set": fields}
-        )
-        return update_result
+                {"_id": ObjectId(id)}, {"$set": fields}
+        )           
+        
+        event = self.database["events"].find_one({"_id": ObjectId(id)})
+        return json.loads(json_util.dumps(event))
     
     def disconnectDB(self):
         self.mongo.close()
