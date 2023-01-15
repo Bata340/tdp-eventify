@@ -2,6 +2,9 @@ from . import exceptions
 from typing import Union
 from pymongo import MongoClient
 from database import settings
+import json
+from bson import json_util
+
 
 class EventRepository:
     def __init__(self):
@@ -15,13 +18,17 @@ class EventRepository:
         return event
         
     def getEvents(self, owner: Union[str, None] = None):
-        self.database["events"].find(filter=owner)
+        filter = {}
+        if owner is not None:
+            filter['owner'] = owner
+        returned_events = self.database["events"].find(filter=filter)
+        events = list(json.loads(json_util.dumps(returned_events)))
+        return events
         
     def createEvent(self, event: dict):
         new_event = self.database["events"].insert_one(event)
-        event_created = self.database["events"].find_one(
-        {"_id": new_event.inserted_id})
-        return event_created
+        event_created = self.database["events"].find_one({"_id": new_event.inserted_id})
+        return json.loads(json_util.dumps(event_created))
 
     def deleteEventWithId(self, id: str):
         event = self.database["events"].delete_one({"_id": id})

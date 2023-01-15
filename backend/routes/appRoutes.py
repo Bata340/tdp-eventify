@@ -90,10 +90,9 @@ async def getEvents(owner: Optional[str] = None):
 
 @router.post("/event")
 async def publishEvent(event: schema.Event):
-    #id = str(uuid.uuid4())
     event_aux = jsonable_encoder(event)
-    
-    return eventRepository.createEvent(event_aux)
+    created_event = eventRepository.createEvent(event_aux)
+    return {"message": created_event}
 
 
 @router.get("/event/{id}", status_code=status.HTTP_200_OK)
