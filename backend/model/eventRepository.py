@@ -11,7 +11,7 @@ class EventRepository:
     def getEventWithId(self, id: str):
         event = self.database["events"].find_one({"_id": id})
         if event is  None:
-            raise exception.EventNotFound
+            raise exceptions.EventNotFound
         return event
         
     def getEvents(self, owner: Union[str, None] = None):
@@ -26,13 +26,13 @@ class EventRepository:
     def deleteEventWithId(self, id: str):
         event = self.database["events"].delete_one({"_id": id})
         if event is None:
-            raise exception.EventNotFound
+            raise exceptions.EventNotFound
         return event
 
     def editEventWithId(self, id: str, fields: dict):
         event = self.database["events"].find_one({"_id": id})
         if event is None:
-            raise exception.EventNotFound
+            raise exceptions.EventNotFound
         update_result = self.database["events"].update_one(
                 {"_id": id}, {"$set": fields}
         )
