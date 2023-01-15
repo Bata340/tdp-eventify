@@ -4,6 +4,7 @@ from pymongo import MongoClient
 from database import settings
 import json
 from bson import json_util
+from bson.objectid import ObjectId
 
 
 class EventRepository:
@@ -12,7 +13,7 @@ class EventRepository:
         self.database = self.mongo["events"]
 
     def getEventWithId(self, id: str):
-        event = self.database["events"].find_one({"_id": id})
+        event = self.database["events"].find_one({"_id": ObjectId(id)})
         if event is  None:
             raise exceptions.EventNotFound
         return event
@@ -31,10 +32,10 @@ class EventRepository:
         return json.loads(json_util.dumps(event_created))
 
     def deleteEventWithId(self, id: str):
-        event = self.database["events"].delete_one({"_id": id})
-        if event is None:
+        deleted_event = self.database["events"].delete_one({"_id": ObjectId(id)})
+        if deleted_event.deleted_count == 0:
             raise exceptions.EventNotFound
-        return event
+        return deleted_event
 
     def editEventWithId(self, id: str, fields: dict):
         event = self.database["events"].find_one({"_id": id})
