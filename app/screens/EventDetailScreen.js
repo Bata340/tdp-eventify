@@ -35,6 +35,9 @@ export default function EventDetailScreen({ route, navigation }) {
                 <View style={{ paddingTop: 10 }}>
                     <Text style={{ fontWeight: 'bold', color: Colors.WHITE, fontSize: 16, marginTop: 10 }}><Feather name="calendar" /> {event.date} {event.time}hs</Text>
                 </View>
+                <View style={{ paddingTop: 10 }}>
+                    <Text style={{ fontWeight: 'bold', color: Colors.WHITE, fontSize: 32, marginTop: 10 }}>$ {parseFloat(event.price).toFixed(2)}</Text>
+                </View>
                 <View style={{ marginTop: 20, borderRadius: 20, backgroundColor: Colors.PRIMARY_DARK_GRAYED, paddingLeft: 25, paddingVertical: 25 }}>
                     <Text style={{ fontWeight: 'bold', color: Colors.WHITE, fontSize: 20, marginTop: 5 }}><Entypo size={25} name="address" /> {event.location}</Text>
                 </View>

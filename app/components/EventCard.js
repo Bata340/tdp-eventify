@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, View, Text, TouchableOpacity } from 'react-native';
+import { Image, View, Text, TouchableOpacity, EventSubscriptionVendor } from 'react-native';
 import Colors from '../constants/Colors';
 import Button from './Button';
 import { useNavigation } from '@react-navigation/native';
@@ -69,6 +69,11 @@ export default function EventCard({
                     <Text style={{ color: Colors.WHITE, fontSize: 16, marginTop: 5 }}><Entypo name="address" /> {event.location}</Text>
                 </View>
                 <View style={{ flex: 3, justifyContent: 'center' }}>
+                    <Text
+                        style={{ fontWeight: 'bold', fontSize: 15, color: Colors.WHITE, textAlign:"center", marginBottom: 20 }}
+                    >
+                        $ {parseFloat(event.price).toFixed(2)}
+                    </Text>
                     <Button
                         title="Comprar"
                         titleColor={Colors.PRIMARY_VERY_DARK_GRAYED}

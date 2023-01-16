@@ -1,5 +1,5 @@
-import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ScrollView, Text, View, ActivityIndicator, RefreshControl } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Colors from '../constants/Colors';
@@ -7,15 +7,82 @@ import Button from '../components/Button';
 import UserAvatar from '../components/UserAvatar';
 import EventCard from '../components/EventCard';
 import { useGlobalAuthContext } from '../utils/ContextFactory';
+import AppConstants from '../constants/AppConstants';
+import { getFirebaseImage } from '../utils/FirebaseHandler';
+
+const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
 export default function EventsScreen({ route, navigaton }) {
     const appAuthContext = useGlobalAuthContext();
+    const [events, setEvents] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
 
-    const events = [
-        { id: 1, name: 'Lollapalooza 2023', image: "https://static.eldiario.es/clip/69d5aa49-6431-4969-9bde-f8b507544124_16-9-discover-aspect-ratio_default_0.jpg", date: '17 Mar, 2023', time: '20:00', location: 'Bernabe Marquez 700, San Isidro', description: "Festival de musica con las mejores bandas de rock, punk, indie, electronica y cumbia" },
-        { id: 2, name: 'BNN', image: "https://exambazaar-2020.s3.amazonaws.com/7840163a82fdf16df256e63fdcbdff21.JPG", date: '03 Dic, 2022', time: '23:00', location: 'Av. Costanera 6201, CABA', description: "Joda con las mejores bandas de electronica y cumbia" },
-        { id: 3, name: 'Opeth', image: "https://cuarteldelmetal.com/wp-content/uploads/2020/07/Opeth-1-1-1.jpg", date: '13 Feb, 2023', time: '19:00', location: 'Av. Rivadavia 7806, CABA', description: "Venite a ver a Opeth en vivo!" }
-    ];
+
+    async function getImagesFromFireBase( eventos ){
+        const urlsArray = [];
+        for ( let i=0; i < eventos.length ; i++ ){
+            if(eventos[i].photos.length > 0){
+                const url = await getFirebaseImage( 
+                    `files/${eventos[i].photos[0]}`
+                );
+                urlsArray.push(url);
+            }else{
+              urlsArray.push("");
+            }
+            
+        }
+        setEventos( eventos );
+        setLoading( false );
+    }
+
+
+    async function getEvents(){
+        const paramsGet = {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+        const url = `${AppConstants.API_URL}/events`;
+        const response = await fetch(
+            url,
+            paramsGet
+        );
+        const jsonResponse = await response.json();
+        if (response.status === 200){
+            if(!jsonResponse.status_code){
+                const arrayEvents = [];
+                for(let i=0; i<jsonResponse.length; i++){
+                    const date = new Date(jsonResponse[i].eventDates[0]);
+                    const imageURI = await getFirebaseImage("files/"+jsonResponse[i].photos[0]);
+                    arrayEvents.push({
+                        id: jsonResponse[i].key,
+                        name: jsonResponse[i].name,
+                        image: jsonResponse[i].photos ? jsonResponse[i].photos[0] : null,
+                        date: `${date.getDay().toString().padStart(2, '0')} ${monthNames[date.getMonth() + 1]}, ${date.getFullYear()}`,
+                        time: `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`,
+                        location: jsonResponse[i].location,
+                        description: jsonResponse[i].description,
+                        price: jsonResponse[i].price,
+                        image: imageURI
+                    });
+                }
+                setEvents(arrayEvents);
+            }
+        }     
+    }
+  
+  
+    useEffect( () => {
+        getEvents();
+    // eslint-disable-next-line
+    }, []);
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await getEvents();
+        setRefreshing(false);
+      };
 
     return (
         <View style={{ backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, paddingBottom: 100 }}>
@@ -60,12 +127,21 @@ export default function EventsScreen({ route, navigaton }) {
                     </View>
                 </View>
             </View>
-            <ScrollView
-                contentContainerStyle={{ alignItems: 'center', paddingTop: 30 }}
-            >
-                {events.map(e => <EventCard key={'event-card-' + e.id} event={e} />)}
-                <View style={{ height: 230 }}></View>
-            </ScrollView>
+                <ScrollView
+                    contentContainerStyle={{ alignItems: 'center', paddingTop: 30 }}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} 
+                          onRefresh={onRefresh} />
+                    }
+                >
+                    {
+                    events.length > 0 ?
+                        events.map(e => <EventCard key={'event-card-' + e.id} event={e} />)
+                    :
+                        <ActivityIndicator size="large" color="#00ff00" />
+                    }
+                    <View style={{ height: 230 }}></View>
+                </ScrollView>
         </View>
     )
 }
