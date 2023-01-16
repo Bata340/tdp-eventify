@@ -341,7 +341,7 @@ export default function EventForm ({
                 />
             </View>
             <View style={{marginTop: 20}}>
-                {!loading ? <ActivityIndicator size="large" color="#00ff00" /> :<Button title="Submit" onPress={() => handleSubmit()}/>}
+                {loading ? <ActivityIndicator size="large" color="#00ff00" /> :<Button title="Submit" onPress={() => handleSubmit()}/>}
             </View>
         </View>
     );
