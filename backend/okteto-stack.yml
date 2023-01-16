@@ -1,0 +1,11 @@
+services:
+  fastapi:
+    public: true
+    image: bata340/fastapi-crud:latest
+    build: .
+    replicas: 1
+    ports:
+      - 8000
+    resources:
+      cpu: 100m
+      memory: 128Mi
