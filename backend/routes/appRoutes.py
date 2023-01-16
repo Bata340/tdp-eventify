@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from model import schema
 from model.eventRepository import EventRepository
 import uuid
+from fastapi.encoders import jsonable_encoder
 import datetime
 from fastapi.encoders import jsonable_encoder
 from model import exceptions
@@ -117,7 +118,7 @@ async def deleteEvent(id: str):
 @router.patch("/event/{id}", status_code=status.HTTP_200_OK)
 async def editEvent(id: str, eventEdit: schema.EventPatch):
     try: 
-        updated_event = eventRepository.editEventWithId(id, eventEdit.dict())
+        updated_event = eventRepository.editEventWithId(id, jsonable_encoder(eventEdit))
         return {"message" : updated_event}
     except (exceptions.EventInfoException) as error:
         raise HTTPException(**error.__dict__)
