@@ -9,6 +9,7 @@ import datetime
 from fastapi.encoders import jsonable_encoder
 from model import exceptions
 
+
 eventRepository = EventRepository()
 
 router = APIRouter()
@@ -24,29 +25,22 @@ registeredUsers['generico'] =  schema.User(
         login = False,
         money = 0
     )
-reservedEvents = {}
-
-remainingAvailabilityEvents = {}
-
 
 def thereIsAvailabilityLeft(event, dateRes):
-    if event.maxAvailability is None:
+    if event['maxAvailability'] is None:
         return True 
-    if dateRes not in remainingAvailabilityEvents[event.key].keys():
-        remainingAvailabilityEvents[event.key][dateRes] = event.maxAvailability - 1
-        return True
-    elif remainingAvailabilityEvents[event.key][dateRes] < event.maxAvailability:
-        remainingAvailabilityEvents[event.key][dateRes] -= 1
-        return True
-    return False
+    print(event['attendance'])
+    print(event['maxAvailability'])
+    if event['attendance'] == event['maxAvailability']:
+        return False
+    return True
 
+def convertDatetime(datimes):
+    datetime_aux = []
+    for date in datimes:
+        datetime_aux.append(date.__format__("%Y-%m-%d %H:%M"))
+    return datetime_aux
 
-#def filterEventsByOwner(events, owner):
-#    ownersRegistryList = []
-#    for key in events:
-#        if events[key].owner == owner:
-#            ownersRegistryList.append(events[key])
-#    return ownersRegistryList
 
 
 def removeNoneValues(dict_aux: dict):
@@ -91,7 +85,10 @@ async def getEvents(owner: Optional[str] = None):
 
 @router.post("/event")
 async def publishEvent(event: schema.Event):
+    event.eventDates = convertDatetime(event.eventDates)
+    print(event.eventDates)
     event_aux = jsonable_encoder(event)
+    print(event_aux)
     created_event = eventRepository.createEvent(event_aux)
     return {"message": created_event}
 
@@ -137,27 +134,27 @@ async def editEvent(id: str, eventEdit: schema.EventPatch):
 #     return {"message" : "ok"}
     
 
-# @router.post("/event/reserve/{id}", status_code=status.HTTP_200_OK)
-# async def reserveEvent(id: str, reservation: schema.Reservation):
-#     if id not in registeredEvents.keys():
-#         return HTTPException(status_code=404, detail="Event with id " + id + " does not exist")
+@router.post("/event/reserve/{id}", status_code=status.HTTP_200_OK)
+async def reserveEvent(id: str, reservation: schema.Reservation):
+    try: 
+        event = eventRepository.getEventWithId(id)
+    except (exceptions.EventInfoException) as error:
+        raise HTTPException(**error.__dict__)
+    reservation.dateReserved =  reservation.dateReserved.__format__("%Y-%m-%d %H:%M")   
+    print(reservation.dateReserved)
+    print(event['eventDates'])
+    if (len(event['eventDates']) > 0) and (reservation.dateReserved not in event['eventDates']):
+        raise HTTPException(status_code=404, detail="Event with id " + id + " has no date " + reservation.dateReserved)
 
-#     event = registeredEvents[id]
+    if not thereIsAvailabilityLeft(event, reservation.dateReserved):
+        raise HTTPException(status_code=404, detail="Event with id " + id + " has no more availability for " + reservation.dateReserved)
 
-#     if (len(event.eventDates) > 0) and (reservation.dateReserved not in event.eventDates):
-#         return HTTPException(status_code=404, detail="Event with id " + id + " has no date " + reservation.dateReserved.strftime("%Y/%m/%d"))
+    eventRepository.editEventWithId(id, {'attendance': event['attendance'] + 1})
+    reservation.event_id = id
+    reservation_event = jsonable_encoder(reservation)
+    created_reservation = eventRepository.create_reservation(reservation_event)
 
-#     if not thereIsAvailabilityLeft(event, reservation.dateReserved):
-#         return HTTPException(status_code=404, detail="Event with id " + id + " has no more availability for " + reservation.dateReserved.strftime("%Y/%m/%d"))
-
-#     reservation.event_id = reservation.id
-#     reservation.id = str(uuid.uuid4())
-#     reservedEvents[id].append(reservation)
-#     registeredUsers[event.owner].money += event.price
-#     registeredEvents[id].paymentsReceived.append({"payer": reservation.userid, "amount": event.price, "date_of_payment": datetime.datetime.now(), "reservation_id": reservation.id, "payment_method": reservation.typeOfCard})
-    
-#     return {"message": "Reservation " + reservation.id  + " was succesfully bought in event " + id + " for " + reservation.dateReserved.strftime("%Y/%m/%d")}
-
+    return {"message": created_reservation}
 
 # @router.get("/user/event-reservations/{username}", status_code=status.HTTP_200_OK)
 # async def get_event_reservations_for_user(username: str):

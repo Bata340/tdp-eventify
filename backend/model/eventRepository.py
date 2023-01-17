@@ -7,10 +7,14 @@ from bson import json_util
 from bson.objectid import ObjectId
 
 
+
+
 class EventRepository:
     def __init__(self):
         self.mongo = MongoClient(settings.mongodb_uri, settings.mongodb_port)
         self.database = self.mongo["events"]
+        self.reserveEvents = self.mongo["reservedEvents"]
+        
 
     def getEventWithId(self, id: str):
         event = self.database["events"].find_one({"_id": ObjectId(id)})
@@ -27,6 +31,7 @@ class EventRepository:
         return events
         
     def createEvent(self, event: dict):
+        
         new_event = self.database["events"].insert_one(event)
         event_created = self.database["events"].find_one({"_id": new_event.inserted_id})
         return json.loads(json_util.dumps(event_created))
@@ -48,6 +53,11 @@ class EventRepository:
         
         event = self.database["events"].find_one({"_id": ObjectId(id)})
         return json.loads(json_util.dumps(event))
+    
+    def create_reservation(self, reservation:dict):
+        new_event_reservation = self.reserveEvents["reservedEvents"].insert_one(reservation)
+        event_reservation_created = self.reserveEvents["reservedEvents"].find_one({"_id": new_event_reservation.inserted_id})
+        return json.loads(json_util.dumps(event_reservation_created))
     
     def disconnectDB(self):
         self.mongo.close()
