@@ -54,10 +54,15 @@ class EventRepository:
         event = self.database["events"].find_one({"_id": ObjectId(id)})
         return json.loads(json_util.dumps(event))
     
-    def create_reservation(self, reservation:dict):
+    def create_reservation(self, reservation: dict):
         new_event_reservation = self.reserveEvents["reservedEvents"].insert_one(reservation)
         event_reservation_created = self.reserveEvents["reservedEvents"].find_one({"_id": new_event_reservation.inserted_id})
         return json.loads(json_util.dumps(event_reservation_created))
-    
+        
+    def getEventsFromUser(self, userId: str):
+        reservedEvents = self.reserveEvents["reservedEvents"].find(filter=userId)
+        events = list(json.loads(json_util.dumps(reservedEvents)))
+        return events
+        
     def disconnectDB(self):
         self.mongo.close()

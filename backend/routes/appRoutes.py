@@ -115,23 +115,11 @@ async def deleteEvent(id: str):
 @router.patch("/event/{id}", status_code=status.HTTP_200_OK)
 async def editEvent(id: str, eventEdit: schema.EventPatch):
     try: 
+        eventEdit.eventDates = convertDatetime(eventEdit.eventDates)
         updated_event = eventRepository.editEventWithId(id, jsonable_encoder(eventEdit))
         return {"message" : updated_event}
     except (exceptions.EventInfoException) as error:
         raise HTTPException(**error.__dict__)
-
-
-
-# @router.delete("/event/{eventId}/photos/{photoId}", status_code=status.HTTP_200_OK)
-# async def deleteEventPhotos(eventId: str, photoId: str):
-#     if eventId not in registeredEvents.keys():
-#         return HTTPException(status_code=404, detail="Event with id " + eventId + " does not exist")
-#     event = registeredEvents[eventId]
-#     if photoId not in event.photos:
-#         return HTTPException(status_code=404, detail="Photo with id " + photoId + " does not exist")
-
-#     event.photos.pop(event.photos.index(photoId))
-#     return {"message" : "ok"}
     
 
 @router.post("/event/reserve/{id}", status_code=status.HTTP_200_OK)
@@ -153,19 +141,17 @@ async def reserveEvent(id: str, reservation: schema.Reservation):
     reservation.event_id = id
     reservation_event = jsonable_encoder(reservation)
     created_reservation = eventRepository.create_reservation(reservation_event)
-
+    #TODO: falta cobrar el pago xq la base
     return {"message": created_reservation}
 
-# @router.get("/user/event-reservations/{username}", status_code=status.HTTP_200_OK)
-# async def get_event_reservations_for_user(username: str):
-#     if username not in registeredUsers.keys():
-#         return HTTPException(status_code=404, detail="User with username " + username + " does not exist.")
-#     returnMessage = []
-#     for _, valueReservation in reservedEvents.items():
-#         for reservation in valueReservation:
-#             if reservation.userid == username:
-#                 returnMessage.append({"reservation": reservation, "event": registeredEvents[reservation.event_id]})
-#     return returnMessage
+
+@router.get("/user/event-reservations/{userId}", status_code=status.HTTP_200_OK)
+async def get_event_reservations_for_user(userId: str):
+    #TODO: check user cuando exista la base
+    #if username not in registeredUsers.keys():
+        #return HTTPException(status_code=404, detail="User with username " + username + " does not exist.")
+    userReservedEvents = eventRepository.getEventsFromUser(userId)
+    return userReservedEvents
 
 
 

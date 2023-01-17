@@ -31,17 +31,19 @@ class Event(BaseModel):
     photos: Union[List[str], None] = None
     paymentsReceived: Optional[List]
     attendance: Optional[int] = 0
+    category: str
 
 
 class EventPatch(BaseModel):
     name: Optional[str] = None
-    price: Optional[int] = None
+    price: Optional[float] = None
     description: Optional[str] = None
     maxAvailability: Optional[int] = None
     location: Optional[str] = None
     maxAvailability: Optional[int] = None 
     eventDates: Optional[List[datetime]] = None
     photos: Optional[List[str]] = None
+    category: str
 
 class Reservation(BaseModel):
     id: Optional[str]
