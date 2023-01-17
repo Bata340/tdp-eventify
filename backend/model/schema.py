@@ -30,6 +30,7 @@ class Event(BaseModel):
     eventDates: Optional[List[datetime]] = None #Si la lista está vacía o es null, entonces puede hacerse todos los días.
     photos: Union[List[str], None] = None
     paymentsReceived: Optional[List]
+    attendance: Optional[int] = 0
 
 
 class EventPatch(BaseModel):
