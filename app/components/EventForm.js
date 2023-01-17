@@ -236,7 +236,6 @@ export default function EventForm ({
             url,
             paramsPost
         );
-        console.log(paramsPost);
         const jsonResponse = await response.json();
         if (response.status === 200){
             setLoading(false);
@@ -256,7 +255,6 @@ export default function EventForm ({
             }
         }else{
             setLoading(false);
-            console.log(response);
             Alert.alert("Error al crear el evento", "Ocurrio un error al intentar crear su evento. Vuelva a intentarlo más tarde.");
         }
     }
