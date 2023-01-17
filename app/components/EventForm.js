@@ -8,6 +8,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { Picker } from "@react-native-picker/picker";
 import { uploadImageToStorageWithURI } from '../utils/FirebaseHandler';
 import AppConstants from '../constants/AppConstants';
+import { useNavigation, StackActions } from '@react-navigation/native';
+import { getFirebaseImage } from '../utils/FirebaseHandler';
 
 
 const categories = [
@@ -38,11 +40,28 @@ const categories = [
 ];
 
 
+const initialState = {
+    name: "",
+    price: "0.00",
+    description: "",
+    location: "",
+    eventDate: new Date(),
+    hour: "",
+    showHourPicker: false,
+    showDatePicker: false,
+    eventImage: null,
+    typeOfEvent: "recital",
+    maxCapacity: "",
+};
+
+
 export default function EventForm ({
-    getPrevData = false
+    getPrevData = false,
+    event = null
 }) {
 
     const fontSize = 14;
+    const navigation = useNavigation();
 
 
     const styles = StyleSheet.create({
@@ -72,19 +91,51 @@ export default function EventForm ({
         }
     });
 
-    const [stateForm, setStateForm] = useState({
-        name: "",
-        price: "0.00",
-        description: "",
-        location: "",
-        eventDate: new Date(),
-        hour: "",
-        showHourPicker: false,
-        showDatePicker: false,
-        eventImage: null,
-        typeOfEvent: "recital",
-        maxCapacity: "",
-    });
+
+    useEffect(() => {retrieveDataFromEvent()}, []);
+
+
+    const retrieveDataFromEvent = async () => {
+        if(getPrevData){
+            
+            const paramsGet = {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            };
+            const url = `${AppConstants.API_URL}/event/${event._id}`;
+            const response = await fetch(
+                url,
+                paramsGet
+            );
+            const jsonResponse = await response.json();
+            if (response.status === 200){
+                if(!jsonResponse.status_code){
+                    const eventData = jsonResponse.message;
+                    const date = new Date(eventData.eventDates[0]);
+                    const uriImage = await getFirebaseImage("files/"+eventData.photos[0]);
+
+                    setStateForm({
+                        name: eventData.name,
+                        price: parseFloat(eventData.price).toFixed(2).toString(),
+                        description: eventData.description,
+                        location: eventData.location,
+                        eventDate: date,
+                        hour: `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`,
+                        showHourPicker: false,
+                        showDatePicker: false,
+                        eventImage: {name: eventData.photos[0], alreadyUploaded:true, uri: uriImage},
+                        typeOfEvent: "recital",
+                        maxCapacity: eventData.maxAvailability,
+                    });
+                }
+            }
+        }
+    }
+
+
+    const [stateForm, setStateForm] = useState(initialState);
     const [loading, setLoading] = useState(false);
 
 
@@ -100,6 +151,23 @@ export default function EventForm ({
         if (!res.canceled) {
             setStateForm({...stateForm, eventImage: res.assets[0]});
         }
+    }
+
+
+    const clearForm = () => {
+        setStateForm(initialState);
+    }
+
+
+    const handleFinishAdd = () => {
+        clearForm();
+        navigation.navigate("EventsStack");
+    }
+
+    const handleFinishEdit = () => {
+        clearForm();
+        const popAction = StackActions.pop(1);
+        navigation.dispatch(popAction);
     }
 
 
@@ -139,22 +207,7 @@ export default function EventForm ({
     }
 
 
-    const handleSubmit = async () => {
-        const validForm = validateForm();
-        if(!validForm){
-            return;
-        }
-        
-        setLoading(true);
-
-        const nameImage = stateForm.eventImage.uri.split('/')[stateForm.eventImage.uri.split('/').length - 1];
-        uploadImageToStorageWithURI(nameImage, stateForm.eventImage.uri);
-
-        const timeZoneOffset = (-new Date().getTimezoneOffset()/60);
-        const sign = timeZoneOffset/Math.abs(timeZoneOffset);
-        const partialStringTZO = Math.abs(timeZoneOffset).toString().padStart(2, '0');
-        const finalStringTZO = (sign == 1 ? '+' : '-') + partialStringTZO + ':00';
-        const dateString = (stateForm.eventDate.getFullYear()+"-"+((stateForm.eventDate.getMonth()+1).toString().padStart(2, '0'))+"-"+stateForm.eventDate.getDate().toString().padStart(2, '0'));
+    const submitAddEvent = async (dateString, nameImage, finalStringTZO) => {
         const paramsPost = {
             method: "POST",
             headers: {
@@ -183,17 +236,107 @@ export default function EventForm ({
             url,
             paramsPost
         );
+        console.log(paramsPost);
         const jsonResponse = await response.json();
         if (response.status === 200){
             setLoading(false);
             if(!jsonResponse.status_code){
-                
-                Alert.alert("Evento creado correctamente", "Su evento ha sido creado correctamente. Al cerrar este diálogo será redireccionado a la página principal.");
+                Alert.alert(
+                    "Evento creado correctamente", 
+                    "Su evento ha sido creado correctamente. Al cerrar este diálogo será redireccionado a la página principal.",
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => handleFinishAdd()
+                        }
+                    ]
+                );
             }else{
                 Alert.alert("Error al crear el evento", "Ocurrio un error al intentar crear su evento. Vuelva a intentarlo más tarde.");
             }
         }else{
+            setLoading(false);
+            console.log(response);
             Alert.alert("Error al crear el evento", "Ocurrio un error al intentar crear su evento. Vuelva a intentarlo más tarde.");
+        }
+    }
+
+
+    const submitEditEvent = async (dateString, nameImage, finalStringTZO) => {
+        const paramsPatch = {
+            method: "PATCH",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "name": stateForm.name,
+                "price": parseFloat(stateForm.price),
+                "description": stateForm.description,
+                "location": stateForm.location,
+                "maxAvailability": parseInt(stateForm.maxCapacity),
+                "eventDates": [
+                    `${dateString}T${stateForm.hour}:00.281000${finalStringTZO}`
+                ],
+                "photos": [
+                    nameImage
+                ]
+            })
+        };
+        const url = `${AppConstants.API_URL}/event/${event._id}`;
+        const response = await fetch(
+            url,
+            paramsPatch
+        );
+        const jsonResponse = await response.json();
+        if (response.status === 200){
+            setLoading(false);
+            if(!jsonResponse.status_code){
+                Alert.alert(
+                    "Evento editado correctamente", 
+                    "Su evento ha sido editado correctamente. Al cerrar este diálogo será redireccionado a la página principal.",
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => handleFinishEdit()
+                        }
+                    ]
+                );
+            }else{
+                Alert.alert("Error al editar el evento", "Ocurrio un error al intentar editar su evento. Vuelva a intentarlo más tarde.");
+            }
+        }else{
+            setLoading(false);
+            Alert.alert("Error al editar el evento", "Ocurrio un error al intentar editar su evento. Vuelva a intentarlo más tarde.");
+        }
+    }
+
+
+    const handleSubmit = async () => {
+        const validForm = validateForm();
+        if(!validForm){
+            return;
+        }
+        
+        setLoading(true);
+
+        let nameImage;
+        if(!stateForm.eventImage.alreadyUploaded){
+            nameImage = stateForm.eventImage.uri.split('/')[stateForm.eventImage.uri.split('/').length - 1];
+            nameImage = await uploadImageToStorageWithURI(nameImage, stateForm.eventImage.uri);
+        }else{
+            nameImage = stateForm.eventImage.name;
+        }
+
+        const timeZoneOffset = (-new Date().getTimezoneOffset()/60);
+        const sign = timeZoneOffset/Math.abs(timeZoneOffset);
+        const partialStringTZO = Math.abs(timeZoneOffset).toString().padStart(2, '0');
+        const finalStringTZO = (sign == 1 ? '+' : '-') + partialStringTZO + ':00';
+        const dateString = (stateForm.eventDate.getFullYear()+"-"+((stateForm.eventDate.getMonth()+1).toString().padStart(2, '0'))+"-"+stateForm.eventDate.getDate().toString().padStart(2, '0'));
+        if(!getPrevData){
+            await submitAddEvent(dateString, nameImage, finalStringTZO); //Es un add
+        }
+        else{
+            await submitEditEvent(dateString, nameImage, finalStringTZO);
         }
     }
 
@@ -212,7 +355,7 @@ export default function EventForm ({
                             height: undefined,
                             aspectRatio: 16/9,
                         }}
-                        source = {stateForm.eventImage}
+                        source = {stateForm.eventImage.alreadyUploaded ? {uri:stateForm.eventImage.uri} : stateForm.eventImage}
                     />
                 :  
                     <>

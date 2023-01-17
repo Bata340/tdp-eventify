@@ -54,12 +54,19 @@ export default function EventsScreen({ route, navigaton }) {
                 const arrayEvents = [];
                 for(let i=0; i<jsonResponse.length; i++){
                     const date = new Date(jsonResponse[i].eventDates[0]);
-                    const imageURI = await getFirebaseImage("files/"+jsonResponse[i].photos[0]);
+                    let imageURI;
+                    try{
+                        imageURI = await getFirebaseImage("files/"+jsonResponse[i].photos[0]);
+                    }catch(exception){
+                        //Image not available
+                        imageURI = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/640px-Image_not_available.png";
+                    }
                     arrayEvents.push({
+                        _id: jsonResponse[i]._id.$oid,
                         id: jsonResponse[i].key,
                         name: jsonResponse[i].name,
                         image: jsonResponse[i].photos ? jsonResponse[i].photos[0] : null,
-                        date: `${date.getDay().toString().padStart(2, '0')} ${monthNames[date.getMonth() + 1]}, ${date.getFullYear()}`,
+                        date: `${date.getDate().toString().padStart(2, '0')} ${monthNames[date.getMonth()]}, ${date.getFullYear()}`,
                         time: `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`,
                         location: jsonResponse[i].location,
                         description: jsonResponse[i].description,
@@ -136,7 +143,7 @@ export default function EventsScreen({ route, navigaton }) {
                 >
                     {
                     events.length > 0 ?
-                        events.map(e => <EventCard key={'event-card-' + e.id} event={e} />)
+                        events.map(e => <EventCard key={'event-card-' + e.id+'-'+e._id} event={e} />)
                     :
                         <ActivityIndicator size="large" color="#00ff00" />
                     }
