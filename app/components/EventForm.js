@@ -126,8 +126,8 @@ export default function EventForm ({
                         showHourPicker: false,
                         showDatePicker: false,
                         eventImage: {name: eventData.photos[0], alreadyUploaded:true, uri: uriImage},
-                        typeOfEvent: "recital",
                         maxCapacity: eventData.maxAvailability,
+                        typeOfEvent: eventData.category
                     });
                 }
             }
@@ -228,7 +228,8 @@ export default function EventForm ({
                 "photos": [
                     nameImage
                 ],
-                "paymentsReceived": []
+                "paymentsReceived": [],
+                "category": stateForm.typeOfEvent
             })
         };
         const url = `${AppConstants.API_URL}/event`;
@@ -277,7 +278,8 @@ export default function EventForm ({
                 ],
                 "photos": [
                     nameImage
-                ]
+                ],
+                "category": stateForm.typeOfEvent
             })
         };
         const url = `${AppConstants.API_URL}/event/${event._id}`;

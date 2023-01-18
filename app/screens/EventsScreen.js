@@ -108,10 +108,10 @@ export default function EventsScreen({ route, navigaton }) {
                     </View>
                 </View>
                 <Text style={{ color: Colors.WHITE, fontWeight: 'bold', fontSize: 35, marginTop: 25 }}>Hola,{"\n"}{appAuthContext.userSession.getUserFullName()}</Text>
-                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 20 }}>
+                {/*<View style={{ display: 'flex', flexDirection: 'row', marginTop: 20 }}>
                     <View style={{ flex: 1, marginRight: 10 }}>
                         <Button
-                            title={"EVENTOS\nPOPULARES"}
+                            title={"EVENTOS POPULARES"}
                             color={Colors.PRIMARY}
                             titleColor={Colors.WHITE}
                             titleSize={16}
@@ -132,7 +132,7 @@ export default function EventsScreen({ route, navigaton }) {
                             numOfLines={2}
                         />
                     </View>
-                </View>
+                </View>*/}
             </View>
                 <ScrollView
                     contentContainerStyle={{ alignItems: 'center', paddingTop: 30 }}

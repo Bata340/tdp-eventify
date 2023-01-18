@@ -10,6 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 export default function EventDetailScreen({ route, navigation }) {
 
     const event = route.params?.event;
+    const isBuy = route.params?.isBuy;
 
     return (
         <View style={{ flexDirection: 'column', width: '100%', paddingTop: 50, height: '100%', backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, alignContent: 'center' }}>
@@ -42,13 +43,28 @@ export default function EventDetailScreen({ route, navigation }) {
                     <Text style={{ fontWeight: 'bold', color: Colors.WHITE, fontSize: 20, marginTop: 5 }}><Entypo size={25} name="address" /> {event.location}</Text>
                 </View>
                 <View style={{ marginTop: 20, paddingBottom: 20, width: '100%', alignContent: 'center' }}>
-                    <Button 
-                        type="large"
-                        title="COMPRAR" 
-                        onPress={() => {
-                            navigation.navigate("EventPayment", {event} );
-                        }} 
-                        titleSize={20} />
+                    {
+                        isBuy?
+                            <Button 
+                                type="large"
+                                title="COMPRAR" 
+                                onPress={() => {
+                                    navigation.navigate("EventPayment", {event} );
+                                }} 
+                                titleSize={20} 
+                            />
+                        :
+                            <Button 
+                                type="large"
+                                title="VER ENTRADA" 
+                                onPress={() => {
+                                    navigation.navigate("EventQR", {event} );
+                                }} 
+                                titleSize={20}
+                                titleStyle={{ fontWeight: "bold", textAlign:"center" }}
+                                numOfLines={2}
+                            />
+                    }
                 </View>
             </ScrollView>
         </View>

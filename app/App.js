@@ -6,6 +6,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import EventsScreen from './screens/EventsScreen';
+import EventQR from './screens/EventQR';
 import SettingsScreen from './screens/SettingsScreen';
 import WalletScreen from './screens/WalletScreen';
 import Colors from './constants/Colors';
@@ -41,6 +42,7 @@ function EventsStack() {
       <EventsStack.Screen name="EventDetail" component={EventDetailScreen} headerShown={false} />
       <EventsStack.Screen name="EventPayment" component={EventPaymentForm} options={{ headerShown: false }} />
       <EventsStack.Screen name="EventEdit" component={EditEventScreen} options={{ headerShown: false}}/>
+      <EventsStack.Screen name="EventQR" component={EventQR} options={{ headerShown: false}}/>
     </EventsStack.Navigator>
   )
 }

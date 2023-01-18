@@ -30,12 +30,25 @@ export default function EventPaymentForm ( { route } ) {
                                 style={{ width: '100%', height: 50, position: 'absolute', bottom: 0, marginBottom: -17 }}
                             />
                         </View>
-                        <View style={{paddingTop:20, paddingBottom:20, width:'100%', alignItems: 'center'}}>
+                        <View style={{paddingTop:10, paddingBottom:10, width:'100%', alignItems: 'center'}}>
                             <Text style={{ color: Colors.WHITE, fontWeight: 'bold', fontSize: 30 }}>{event.name}</Text>
                         </View>
-                        <View style={{paddingBottom:20, width:'100%', alignItems: 'center'}}>
-                            <Text style={{color: Colors.DARK_GRAY, fontSize: 30, fontWeight: 'bold'}}>
-                                $ {"250.00"}
+                        <View style={{paddingBottom:20, width:'100%'}}>
+                            <View style={{paddingLeft:10}}>
+                                <View style={{display: 'flex', flexDirection: 'row', paddingRight:20}}>
+                                    <Text style={{color: Colors.DARK_GRAY, fontSize: 20, fontWeight: 'bold', flex: 8}}>Precio del evento:</Text>
+                                    <Text style={{color: Colors.DARK_GRAY, fontSize: 20, fontWeight: 'bold', flex: 1, textAlign: 'right'}}>$</Text>
+                                    <Text style={{color: Colors.DARK_GRAY, fontSize: 20, fontWeight: 'bold', flex: 4, textAlign: 'right'}}>{event.price.toFixed(2)}</Text>
+                                </View>
+                                <View style={{display: 'flex', flexDirection: 'row', paddingRight:20}}>
+                                    <Text style={{color: Colors.DARK_GRAY, fontSize: 20, fontWeight: 'bold', flex: 8}}>Pago por servicio:</Text>
+                                    <Text style={{color: Colors.DARK_GRAY, fontSize: 20, fontWeight: 'bold', flex: 1, textAlign: 'right'}}>$</Text>
+                                    <Text style={{color: Colors.DARK_GRAY, fontSize: 20, fontWeight: 'bold', flex: 4, textAlign: 'right'}}>{(parseFloat(event.price)*0.05).toFixed(2)}</Text>
+                                </View>
+                                
+                            </View>
+                            <Text style={{color: Colors.DARK_GRAY, fontSize: 30, fontWeight: 'bold', textAlign:"center", marginTop:10}}>
+                                $ {parseFloat(event.price)+parseFloat((parseFloat(event.price)*0.05).toFixed(2))}
                             </Text>
                         </View>
                     </View>
