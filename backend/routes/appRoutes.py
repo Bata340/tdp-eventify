@@ -28,9 +28,7 @@ registeredUsers['generico'] =  schema.User(
 
 def thereIsAvailabilityLeft(event, dateRes):
     if event['maxAvailability'] is None:
-        return True 
-    print(event['attendance'])
-    print(event['maxAvailability'])
+        return True
     if event['attendance'] == event['maxAvailability']:
         return False
     return True
@@ -38,7 +36,7 @@ def thereIsAvailabilityLeft(event, dateRes):
 def convertDatetime(datimes):
     datetime_aux = []
     for date in datimes:
-        datetime_aux.append(date.__format__("%Y-%m-%d %H:%M"))
+        datetime_aux.append(date.__format__("%Y-%m-%dT%H:%M:%SZ"))
     return datetime_aux
 
 
@@ -128,7 +126,7 @@ async def reserveEvent(id: str, reservation: schema.Reservation):
         event = eventRepository.getEventWithId(id)
     except (exceptions.EventInfoException) as error:
         raise HTTPException(**error.__dict__)
-    reservation.dateReserved =  reservation.dateReserved.__format__("%Y-%m-%d %H:%M")   
+    reservation.dateReserved =  reservation.dateReserved.__format__("%Y-%m-%dT%H:%M:%SZ")   
     print(reservation.dateReserved)
     print(event['eventDates'])
     if (len(event['eventDates']) > 0) and (reservation.dateReserved not in event['eventDates']):
