@@ -4,18 +4,15 @@ from datetime import date, datetime
 
 
 class User(BaseModel):
-    username: str
+    name: str
     password: str
-    first_name: str
-    last_name: str
+    email: str
     birth_date: date
-    phone_number : Union[str, None] = None
-    location: str
-    login: bool
-    money: Optional[float]
+    money: Optional[float] = 0
+    profilePic: Optional[str] = None
 
 class UserLogin(BaseModel):
-    username: str
+    email: str
     password: str    
 
 class Event(BaseModel):

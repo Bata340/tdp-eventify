@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 from neo4j import GraphDatabase
-import settings
+from database import settings
 
 client = MongoClient(settings.mongodb_uri, settings.mongodb_port)
 events_db_mdb = client['events']

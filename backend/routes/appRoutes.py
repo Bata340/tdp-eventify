@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from model import schema
 from model.eventRepository import EventRepository
+from model.userRepository import UserRepository
 import uuid
 from fastapi.encoders import jsonable_encoder
 import datetime
@@ -11,20 +12,10 @@ from model import exceptions
 
 
 eventRepository = EventRepository()
+userRepository = UserRepository()
 
 router = APIRouter()
-registeredUsers = {}
-registeredUsers['generico'] =  schema.User(
-        username = "generico",
-        password = "generico",
-        first_name = "Usuario",
-        last_name = "Generico",
-        birth_date = datetime.date(2000,6,30),
-        phone_number = "2222-343434",
-        location = "Argentina",
-        login = False,
-        money = 0
-    )
+
 
 def thereIsAvailabilityLeft(event, dateRes):
     if event['maxAvailability'] is None:
@@ -51,30 +42,38 @@ def removeNoneValues(dict_aux: dict):
 
 @router.post("/register", status_code=status.HTTP_200_OK)
 async def register(user: schema.User):
-    if user.username in registeredUsers.keys():
-        return HTTPException(status_code=500, detail="A user with name " + user["username"] + " already exists")
-    user.login = False
-    user.money = 0
-    registeredUsers[user.username] = user
-    return {"message" : "registered user " +  user.username}
+    repoReturn = userRepository.createUser(user)
+    if 'status_code' in repoReturn and repoReturn["status_code"] != 200:
+        return HTTPException(status_code=repoReturn["status_code"], detail = repoReturn["message"])
+    else:
+        return {"message": repoReturn["message"]}
 
 
+#Password received must be hashed...
 @router.post("/login", status_code=status.HTTP_200_OK)
 async def login(user: schema.UserLogin):
+    repoReturn = userRepository.getUser(user.email)
+    if repoReturn is None: 
+        return HTTPException(status_code= 404, detail = "El usuario no se encuentra en la base de datos.")
+    if repoReturn.get("password") != user.password:
+        return HTTPException(status_code = 401, detail = "Contraseña incorrecta. Intente nuevamente.")
+    return {
+        "message": "Inicio de sesión exitoso.", 
+        "user": {
+            "name": repoReturn.get("name"), 
+            "email": repoReturn.get("email"), 
+            "profilePic": repoReturn.get("profile_pic"),
+            "money": repoReturn.get("money")
+        }
+    }
 
-    if user.username not in registeredUsers.keys():
-        return HTTPException(status_code=404, detail="User with name " + user.username + " does not exist")
-    if registeredUsers[user.username].password != user.password:
-        return HTTPException(status_code=401, detail="Wrong password")
-    registeredUsers[user.username].login = True
-    return {"message" : "ok"}
 
-
-@router.get("/users/{username}", status_code=status.HTTP_200_OK)
-async def getUser(username: str):
-    if username not in registeredUsers.keys():
-        return HTTPException(status_code=404, detail="User with name " + username + " does not exist")
-    return {"message": registeredUsers[username]}
+@router.get("/users", status_code=status.HTTP_200_OK)
+async def getUser(email: str = None, name: str = None):
+    usersFound = userRepository.getUsersWithFilters(email, name)
+    if usersFound is None or len(usersFound) == 0: 
+        return HTTPException(status_code= 404, detail = "El usuario no se encuentra en la base de datos.")
+    return usersFound
 
 
 @router.get("/events", status_code=status.HTTP_200_OK)

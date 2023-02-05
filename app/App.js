@@ -20,6 +20,7 @@ import EventDetailScreen from './screens/EventDetailScreen';
 import AddEventScreen from './screens/AddEventScreen';
 import EventPaymentForm from './screens/EventPaymentForm';
 import EditEventScreen from './screens/EditEventScreen';
+import RegisterScreen from './screens/RegisterScreen';
 
 LogBox.ignoreAllLogs();
 
@@ -29,6 +30,7 @@ function LoginStack() {
   return(
     <LoginStack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }} >
       <LoginStack.Screen name="Login" component={LoginScreen} headerShown={false} />
+      <LoginStack.Screen name="Register" component={RegisterScreen} headerShown={false} />
     </LoginStack.Navigator>
   )
 }

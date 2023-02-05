@@ -8,7 +8,7 @@ import Button from '../components/Button';
 import { useGlobalAuthActionsContext, useGlobalAuthContext } from '../utils/ContextFactory';
 const EventifyLogo = require('../assets/eventify-logo.png');
 
-export default function LoginScreen({ route, navigaton }) {
+export default function LoginScreen({ route, navigation }) {
     const appAuthContext = useGlobalAuthContext();
     const setAppAuthContext = useGlobalAuthActionsContext();
 
@@ -61,7 +61,7 @@ export default function LoginScreen({ route, navigaton }) {
                 <View style={{ width: '100%', alignItems: 'center', marginTop: 70 }}>
                         <Text style={{ color: Colors.WHITE, fontWeight: 'bold', fontSize: 23, marginBottom: 40 }}>Olvidaste tu clave?</Text>
                         <Text style={{ color: Colors.PRIMARY_GRAYED, fontSize: 20, marginBottom: 15 }}>Aun no estas registrado?</Text>
-                        <Text style={{ color: Colors.PRIMARY_VERY_LIGHT, fontWeight: 'bold', fontSize: 26 }} >Registrate</Text>
+                        <Text onPress={() => { navigation.navigate("Register");}} style={{ color: Colors.PRIMARY_VERY_LIGHT, fontWeight: 'bold', fontSize: 26 }} >Registrate</Text>
                 </View>
                 </View>
             
