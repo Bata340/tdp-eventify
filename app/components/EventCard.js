@@ -46,7 +46,7 @@ export default function EventCard({
 
     return (
         <>
-            <View style={{ borderRadius: 30, height: 250, width: '90%', overflow: 'hidden' }}>
+            <View style={{ borderRadius: 20, height: 200, width: '90%', overflow: 'hidden' }}>
                 <Image style={{ height: 250 }} source={{ uri: event.image }} />
                 <TouchableOpacity
                     style={{ borderRadius: 50, backgroundColor: Colors.WHITE, height: 50, width: 50, alignItems: 'center', alignContent: 'center', justifyContent: 'center', left: '80%', top: '10%', position: 'absolute' }}

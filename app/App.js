@@ -21,6 +21,7 @@ import AddEventScreen from './screens/AddEventScreen';
 import EventPaymentForm from './screens/EventPaymentForm';
 import EditEventScreen from './screens/EditEventScreen';
 import RegisterScreen from './screens/RegisterScreen';
+import ShowPeople from './screens/ShowPeople';
 
 LogBox.ignoreAllLogs();
 
@@ -45,6 +46,7 @@ function EventsStack() {
       <EventsStack.Screen name="EventPayment" component={EventPaymentForm} options={{ headerShown: false }} />
       <EventsStack.Screen name="EventEdit" component={EditEventScreen} options={{ headerShown: false}}/>
       <EventsStack.Screen name="EventQR" component={EventQR} options={{ headerShown: false}}/>
+      <EventsStack.Screen name="ShowPeople" component={ShowPeople} options={{ headerShown: false}}/>
     </EventsStack.Navigator>
   )
 }
