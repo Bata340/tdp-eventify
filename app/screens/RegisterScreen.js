@@ -5,6 +5,8 @@ import EventifyTextInput from '../components/EventifyTextInput';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Button from '../components/Button';
+import AppConstants from '../constants/AppConstants';
+
 const EventifyLogo = require('../assets/eventify-logo.png');
 
 export default function Register({ navigation }) {
@@ -12,9 +14,10 @@ export default function Register({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
+  const [loading, setLoading] = useState(false);
 
 
-  const tryRegister = () => {
+  async function tryRegister () {
     if (name == "" || email == "" || password == "" || passwordCheck == "") {
         return Alert.alert('Completa los datos por favor');
     }
@@ -23,8 +26,50 @@ export default function Register({ navigation }) {
         return Alert.alert('Las contraseñas ingresadas no coinciden');
     }
 
-    // Implementar la lógica para crear un nuevo usuario en la base de datos
-    // ...
+    const paramsPost = {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        // deshardcodear fecha y foto
+        body: JSON.stringify({
+            "name": name,
+            "password": password,
+            "email": email,
+            "birth_date": "2023-02-07",
+            "money": 0,
+            "profilePic": "string"
+        })
+    };
+
+    const url = `${AppConstants.API_URL}/register`;
+    
+    const response = await fetch(
+        url,
+        paramsPost
+    );
+
+    const jsonResponse = await response.json();
+
+    if (response.status === 200){
+        setLoading(false);
+        if(!jsonResponse.status_code){
+            Alert.alert(
+                "Usuario creado correctamente", 
+                "Su usuario ha sido creado correctamente. Al cerrar este diálogo será redireccionado al Login.",
+                [
+                    {
+                        text: "OK"
+                    }
+                ]
+            );
+        }else{
+            Alert.alert("Error al crear el usuario", "Ocurrio un error al intentar crear su perfil. Vuelva a intentarlo más tarde.");
+        }
+    }else{
+        setLoading(false);
+        Alert.alert("Error al crear el usuario", "Ocurrio un error al intentar crear su perfil. Vuelva a intentarlo más tarde.");
+    }
 
     navigation.navigate('Login');
   };
