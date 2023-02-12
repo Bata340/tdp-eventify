@@ -23,10 +23,15 @@ class UserRepository:
         users = self.usersDB.execute_read(self._execute_get_users_with_filters, email, name)
         return users
 
+    def updateMoneyAccount(self,email:str, money:int):
+        message = self.usersDB.execute_write(self._update_money_account_for_user, email, money)
+        return message
+
 
     @staticmethod
     def _getUser(tx, email: str):
         try:
+            
             result = tx.run(
                 "MATCH (user:User {email: $email}) return user",
                 email = email
@@ -79,6 +84,27 @@ class UserRepository:
                 } 
             )
         return results_list
+
+    @staticmethod
+    def _update_money_account_for_user(tx, email, money):
+        print("entre")
+        try:
+            result = tx.run(
+                "MATCH (user:User) "
+                "WHERE user.email CONTAINS $email "
+                "SET user.money = user.money + $money "
+                "RETURN user",
+                email = email.lower(),
+                money = money
+            )
+        except:
+            return None
+        singleRes = result.single()
+        if singleRes is None:
+            return None
+        else:
+            return singleRes.value()
+
 
     
 

@@ -9,6 +9,7 @@ from bson.objectid import ObjectId
 
 
 
+
 class EventRepository:
     def __init__(self):
         self.mongo = MongoClient(settings.mongodb_uri, settings.mongodb_port)
@@ -57,6 +58,7 @@ class EventRepository:
     def create_reservation(self, reservation: dict):
         new_event_reservation = self.reserveEvents["reservedEvents"].insert_one(reservation)
         event_reservation_created = self.reserveEvents["reservedEvents"].find_one({"_id": new_event_reservation.inserted_id})
+         
         return json.loads(json_util.dumps(event_reservation_created))
         
     def getEventsFromUser(self, userId: str):

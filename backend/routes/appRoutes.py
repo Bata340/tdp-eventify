@@ -123,23 +123,30 @@ async def editEvent(id: str, eventEdit: schema.EventPatch):
 async def reserveEvent(id: str, reservation: schema.Reservation):
     try: 
         event = eventRepository.getEventWithId(id)
+        
+        reservation.dateReserved =  reservation.dateReserved.__format__("%Y-%m-%dT%H:%M:%SZ")   
+        print(reservation.dateReserved)
+        print(event['eventDates'])
+        if (len(event['eventDates']) > 0) and (reservation.dateReserved not in event['eventDates']):
+            raise HTTPException(status_code=404, detail="Event with id " + id + " has no date " + reservation.dateReserved)
+
+        if not thereIsAvailabilityLeft(event, reservation.dateReserved):
+            raise HTTPException(status_code=404, detail="Event with id " + id + " has no more availability for " + reservation.dateReserved)
+
+        eventRepository.editEventWithId(id, {'attendance': event['attendance'] + 1})
+        reservation.event_id = id
+        reservation_event = jsonable_encoder(reservation)
+        created_reservation = eventRepository.create_reservation(reservation_event)
+       
+        userRepository.updateMoneyAccount(event['owner'], event['price'])
+        userRepository.updateMoneyAccount(reservation.userid, -event['price'])
+        
+
+        return {"message": created_reservation}
     except (exceptions.EventInfoException) as error:
         raise HTTPException(**error.__dict__)
-    reservation.dateReserved =  reservation.dateReserved.__format__("%Y-%m-%dT%H:%M:%SZ")   
-    print(reservation.dateReserved)
-    print(event['eventDates'])
-    if (len(event['eventDates']) > 0) and (reservation.dateReserved not in event['eventDates']):
-        raise HTTPException(status_code=404, detail="Event with id " + id + " has no date " + reservation.dateReserved)
-
-    if not thereIsAvailabilityLeft(event, reservation.dateReserved):
-        raise HTTPException(status_code=404, detail="Event with id " + id + " has no more availability for " + reservation.dateReserved)
-
-    eventRepository.editEventWithId(id, {'attendance': event['attendance'] + 1})
-    reservation.event_id = id
-    reservation_event = jsonable_encoder(reservation)
-    created_reservation = eventRepository.create_reservation(reservation_event)
-    #TODO: falta cobrar el pago xq la base
-    return {"message": created_reservation}
+    
+    
 
 
 @router.get("/user/event-reservations/{userId}", status_code=status.HTTP_200_OK)
