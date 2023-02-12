@@ -152,8 +152,10 @@ async def reserveEvent(id: str, reservation: schema.Reservation):
 @router.get("/user/event-reservations/{userId}", status_code=status.HTTP_200_OK)
 async def get_event_reservations_for_user(userId: str):
     #TODO: check user cuando exista la base
-    #if username not in registeredUsers.keys():
-        #return HTTPException(status_code=404, detail="User with username " + username + " does not exist.")
+    user = userRepository.getUser(userId)
+    if user is None: 
+        return HTTPException(status_code= 404, detail = "El usuario no se encuentra en la base de datos.")
+    print(user)
     userReservedEvents = eventRepository.getEventsFromUser(userId)
     return userReservedEvents
 
