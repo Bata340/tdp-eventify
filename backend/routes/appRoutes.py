@@ -139,7 +139,8 @@ async def reserveEvent(id: str, reservation: schema.Reservation):
         created_reservation = eventRepository.create_reservation(reservation_event)
        
         userRepository.updateMoneyAccount(event['owner'], event['price'])
-        userRepository.updateMoneyAccount(reservation.userid, -event['price'])
+        #Iria para la segunda version
+        #userRepository.updateMoneyAccount(reservation.userid, -event['price'])
         
 
         return {"message": created_reservation}

@@ -66,6 +66,7 @@ class EventRepository:
         reservedEvents = self.reserveEvents["reservedEvents"].find(filter=filter)
         events = list(json.loads(json_util.dumps(reservedEvents)))
         return events
+
         
     def disconnectDB(self):
         self.mongo.close()
