@@ -60,6 +60,7 @@ export const EventsList = (id_persona = '') => {
                         id: jsonResponse[i].key,
                         name: jsonResponse[i].name,
                         image: jsonResponse[i].photos ? jsonResponse[i].photos[0] : null,
+                        isoStringDate: jsonResponse[i].eventDates[0],
                         date: `${date.getDate().toString().padStart(2, '0')} ${monthNames[date.getMonth()]}, ${date.getFullYear()}`,
                         time: `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`,
                         location: jsonResponse[i].location,
