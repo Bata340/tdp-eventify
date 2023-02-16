@@ -15,6 +15,7 @@ class EventRepository:
         self.mongo = MongoClient(settings.mongodb_uri, settings.mongodb_port)
         self.database = self.mongo["events"]
         self.reserveEvents = self.mongo["reservedEvents"]
+        self.transactions = self.mongo["transactions"]
         
 
     def getEventWithId(self, id: str):
@@ -67,6 +68,18 @@ class EventRepository:
         events = list(json.loads(json_util.dumps(reservedEvents)))
         return events
 
-        
+    def getTransactionsFromUser(self, userId: str):
+        filter = {'userId': userId}
+        print(filter)
+        returnedTransactions = self.transactions["transactions"].find(filter=filter)
+        print(returnedTransactions)
+        txs = list(json.loads(json_util.dumps(returnedTransactions)))
+        return txs
+
+    def createTransaction(self, tx: dict):
+        transaction = self.transactions["transactions"].insert_one(tx)
+        newTransaction = self.transactions["transactions"].find_one({"_id": transaction.inserted_id})
+        return json.loads(json_util.dumps(newTransaction))
+
     def disconnectDB(self):
         self.mongo.close()

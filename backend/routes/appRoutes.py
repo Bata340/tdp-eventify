@@ -7,7 +7,6 @@ from model.userRepository import UserRepository
 import uuid
 from fastapi.encoders import jsonable_encoder
 import datetime
-from fastapi.encoders import jsonable_encoder
 from model import exceptions
 
 
@@ -139,8 +138,26 @@ async def reserveEvent(id: str, reservation: schema.Reservation):
         created_reservation = eventRepository.create_reservation(reservation_event)
        
         userRepository.updateMoneyAccount(event['owner'], event['price'])
+
+        transactionDate = datetime.datetime.now()
+        receiverTransaction = schema.Transaction (
+            event_id = id,
+            userId = event['owner'],
+            date = transactionDate,
+            typeOfCard = reservation.typeOfCard,
+            paymentAmount = event['price']
+        )
+        eventRepository.createTransaction(jsonable_encoder(receiverTransaction))
         #Iria para la segunda version
         #userRepository.updateMoneyAccount(reservation.userid, -event['price'])
+        #payerTransaction = schema.Transaction (
+        #    event_id = id,
+        #    userId = reservation.userId,
+        #    date = transactionDate,
+        #    typeOfCard = reservation.typeOfCard,
+        #    paymentAmount = -event.price
+        #)
+        #eventRepository.createTransaction(payerTransaction)
         
 
         return {"message": created_reservation}
@@ -161,5 +178,9 @@ async def get_event_reservations_for_user(userId: str):
     return userReservedEvents
 
 
+
+@router.get("/transactions/{userId}", status_code=status.HTTP_200_OK)
+async def get_transactions(userId: str):
+    return eventRepository.getTransactionsFromUser(userId)
 
         
