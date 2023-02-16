@@ -150,14 +150,14 @@ async def reserveEvent(id: str, reservation: schema.Reservation):
         eventRepository.createTransaction(jsonable_encoder(receiverTransaction))
         #Iria para la segunda version
         #userRepository.updateMoneyAccount(reservation.userid, -event['price'])
-        #payerTransaction = schema.Transaction (
-        #    event_id = id,
-        #    userId = reservation.userId,
-        #    date = transactionDate,
-        #    typeOfCard = reservation.typeOfCard,
-        #    paymentAmount = -event.price
-        #)
-        #eventRepository.createTransaction(payerTransaction)
+        payerTransaction = schema.Transaction (
+            event_id = id,
+            userId = reservation.userid,
+            date = transactionDate,
+            typeOfCard = reservation.typeOfCard,
+            paymentAmount = -event['price']
+        )
+        eventRepository.createTransaction(jsonable_encoder(payerTransaction))
         
 
         return {"message": created_reservation}
