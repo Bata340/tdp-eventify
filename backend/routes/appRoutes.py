@@ -24,12 +24,12 @@ def thereIsAvailabilityLeft(event, dateRes):
         return False
     return True
 
+
 def convertDatetime(datimes):
     datetime_aux = []
     for date in datimes:
         datetime_aux.append(date.__format__("%Y-%m-%dT%H:%M:%SZ"))
     return datetime_aux
-
 
 
 def removeNoneValues(dict_aux: dict):
@@ -44,24 +44,24 @@ def removeNoneValues(dict_aux: dict):
 async def register(user: schema.User):
     repoReturn = userRepository.createUser(user)
     if 'status_code' in repoReturn and repoReturn["status_code"] != 200:
-        return HTTPException(status_code=repoReturn["status_code"], detail = repoReturn["message"])
+        return HTTPException(status_code=repoReturn["status_code"], detail=repoReturn["message"])
     else:
         return {"message": repoReturn["message"]}
 
 
-#Password received must be hashed...
+# Password received must be hashed...
 @router.post("/login", status_code=status.HTTP_200_OK)
 async def login(user: schema.UserLogin):
     repoReturn = userRepository.getUser(user.email)
-    if repoReturn is None: 
-        return HTTPException(status_code= 404, detail = "El usuario no se encuentra en la base de datos.")
+    if repoReturn is None:
+        return HTTPException(status_code=404, detail="El usuario no se encuentra en la base de datos.")
     if repoReturn.get("password") != user.password:
-        return HTTPException(status_code = 401, detail = "Contraseña incorrecta. Intente nuevamente.")
+        return HTTPException(status_code=401, detail="Contraseña incorrecta. Intente nuevamente.")
     return {
-        "message": "Inicio de sesión exitoso.", 
+        "message": "Inicio de sesión exitoso.",
         "user": {
-            "name": repoReturn.get("name"), 
-            "email": repoReturn.get("email"), 
+            "name": repoReturn.get("name"),
+            "email": repoReturn.get("email"),
             "profilePic": repoReturn.get("profile_pic"),
             "money": repoReturn.get("money")
         }
@@ -71,14 +71,15 @@ async def login(user: schema.UserLogin):
 @router.get("/users", status_code=status.HTTP_200_OK)
 async def getUser(email: str = None, name: str = None):
     usersFound = userRepository.getUsersWithFilters(email, name)
-    if usersFound is None or len(usersFound) == 0: 
-        return HTTPException(status_code= 404, detail = "El usuario no se encuentra en la base de datos.")
+    if usersFound is None or len(usersFound) == 0:
+        return HTTPException(status_code=404, detail="El usuario no se encuentra en la base de datos.")
     return usersFound
 
 
 @router.get("/events", status_code=status.HTTP_200_OK)
 async def getEvents(owner: Optional[str] = None):
     return eventRepository.getEvents(owner)
+
 
 @router.post("/event")
 async def publishEvent(event: schema.Event):
@@ -92,7 +93,7 @@ async def publishEvent(event: schema.Event):
 
 @router.get("/event/{id}", status_code=status.HTTP_200_OK)
 async def getEventWithId(id: str):
-    
+
     try:
         event = eventRepository.getEventWithId(id)
         return {"message": event}
@@ -102,54 +103,73 @@ async def getEventWithId(id: str):
 
 @router.delete("/event/{id}", status_code=status.HTTP_200_OK)
 async def deleteEvent(id: str):
-    try: 
+    try:
         eventRepository.deleteEventWithId(id)
-        return {"message" : "ok"}
+        return {"message": "ok"}
     except (exceptions.EventInfoException) as error:
         raise HTTPException(**error.__dict__)
 
 
 @router.patch("/event/{id}", status_code=status.HTTP_200_OK)
 async def editEvent(id: str, eventEdit: schema.EventPatch):
-    try: 
+    try:
         eventEdit.eventDates = convertDatetime(eventEdit.eventDates)
-        updated_event = eventRepository.editEventWithId(id, jsonable_encoder(eventEdit))
-        return {"message" : updated_event}
+        updated_event = eventRepository.editEventWithId(
+            id, jsonable_encoder(eventEdit))
+        return {"message": updated_event}
     except (exceptions.EventInfoException) as error:
         raise HTTPException(**error.__dict__)
-    
+
 
 @router.post("/event/reserve/{id}", status_code=status.HTTP_200_OK)
 async def reserveEvent(id: str, reservation: schema.Reservation):
-    try: 
+    try:
         event = eventRepository.getEventWithId(id)
     except (exceptions.EventInfoException) as error:
         raise HTTPException(**error.__dict__)
-    reservation.dateReserved =  reservation.dateReserved.__format__("%Y-%m-%dT%H:%M:%SZ")   
+    reservation.dateReserved = reservation.dateReserved.__format__(
+        "%Y-%m-%dT%H:%M:%SZ")
     print(reservation.dateReserved)
     print(event['eventDates'])
     if (len(event['eventDates']) > 0) and (reservation.dateReserved not in event['eventDates']):
-        raise HTTPException(status_code=404, detail="Event with id " + id + " has no date " + reservation.dateReserved)
+        raise HTTPException(status_code=404, detail="Event with id " +
+                            id + " has no date " + reservation.dateReserved)
 
     if not thereIsAvailabilityLeft(event, reservation.dateReserved):
-        raise HTTPException(status_code=404, detail="Event with id " + id + " has no more availability for " + reservation.dateReserved)
+        raise HTTPException(status_code=404, detail="Event with id " +
+                            id + " has no more availability for " + reservation.dateReserved)
 
-    eventRepository.editEventWithId(id, {'attendance': event['attendance'] + 1})
+    eventRepository.editEventWithId(
+        id, {'attendance': event['attendance'] + 1})
     reservation.event_id = id
     reservation_event = jsonable_encoder(reservation)
     created_reservation = eventRepository.create_reservation(reservation_event)
-    #TODO: falta cobrar el pago xq la base
+    # TODO: falta cobrar el pago xq la base
     return {"message": created_reservation}
 
 
 @router.get("/user/event-reservations/{userId}", status_code=status.HTTP_200_OK)
 async def get_event_reservations_for_user(userId: str):
-    #TODO: check user cuando exista la base
-    #if username not in registeredUsers.keys():
-        #return HTTPException(status_code=404, detail="User with username " + username + " does not exist.")
+    # TODO: check user cuando exista la base
+    # if username not in registeredUsers.keys():
+    # return HTTPException(status_code=404, detail="User with username " + username + " does not exist.")
     userReservedEvents = eventRepository.getEventsFromUser(userId)
     return userReservedEvents
 
 
+@router.post("/user/{fromUserId}/request", status_code=status.HTTP_200_OK,)
+async def send_friendship_request(fromUserId: str, toUserId: str):
+    repoReturn = userRepository.getUserById(toUserId)
+    if repoReturn is None:
+        return HTTPException(status_code=404, detail="El usuario al que desea hacer amigo no se encuentra en la base de datos.")
+    return {"message": "request sent"}
 
-        
+    userRepository.sendRequest(fromUserId, toUserId)
+
+
+@router.get("/user/{userId}/friendRequests")
+async def get_friendship_requets(userId: str):
+    usersFound = userRepository.getFriendRequests(userId)
+    if usersFound is None or len(usersFound) == 0:
+        return HTTPException(status_code=404, detail="El usuario no se encuentra en la base de datos.")
+    return usersFound
