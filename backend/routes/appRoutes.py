@@ -7,7 +7,6 @@ from model.userRepository import UserRepository
 import uuid
 from fastapi.encoders import jsonable_encoder
 import datetime
-from fastapi.encoders import jsonable_encoder
 from model import exceptions
 
 
@@ -125,34 +124,61 @@ async def editEvent(id: str, eventEdit: schema.EventPatch):
 async def reserveEvent(id: str, reservation: schema.Reservation):
     try:
         event = eventRepository.getEventWithId(id)
+
+        reservation.dateReserved = reservation.dateReserved.__format__(
+            "%Y-%m-%dT%H:%M:%SZ")
+        print(reservation.dateReserved)
+        print(event['eventDates'])
+        if (len(event['eventDates']) > 0) and (reservation.dateReserved not in event['eventDates']):
+            raise HTTPException(status_code=404, detail="Event with id " +
+                                id + " has no date " + reservation.dateReserved)
+
+        if not thereIsAvailabilityLeft(event, reservation.dateReserved):
+            raise HTTPException(status_code=404, detail="Event with id " +
+                                id + " has no more availability for " + reservation.dateReserved)
+
+        eventRepository.editEventWithId(
+            id, {'attendance': event['attendance'] + 1})
+        reservation.event_id = id
+        reservation_event = jsonable_encoder(reservation)
+        created_reservation = eventRepository.create_reservation(
+            reservation_event)
+
+        userRepository.updateMoneyAccount(event['owner'], event['price'])
+
+        transactionDate = datetime.datetime.now()
+        receiverTransaction = schema.Transaction(
+            event_id=id,
+            userId=event['owner'],
+            date=transactionDate,
+            typeOfCard=reservation.typeOfCard,
+            paymentAmount=event['price']
+        )
+        eventRepository.createTransaction(
+            jsonable_encoder(receiverTransaction))
+        # Iria para la segunda version
+        #userRepository.updateMoneyAccount(reservation.userid, -event['price'])
+        payerTransaction = schema.Transaction(
+            event_id=id,
+            userId=reservation.userid,
+            date=transactionDate,
+            typeOfCard=reservation.typeOfCard,
+            paymentAmount=-event['price']
+        )
+        eventRepository.createTransaction(jsonable_encoder(payerTransaction))
+
+        return {"message": created_reservation}
     except (exceptions.EventInfoException) as error:
         raise HTTPException(**error.__dict__)
-    reservation.dateReserved = reservation.dateReserved.__format__(
-        "%Y-%m-%dT%H:%M:%SZ")
-    print(reservation.dateReserved)
-    print(event['eventDates'])
-    if (len(event['eventDates']) > 0) and (reservation.dateReserved not in event['eventDates']):
-        raise HTTPException(status_code=404, detail="Event with id " +
-                            id + " has no date " + reservation.dateReserved)
-
-    if not thereIsAvailabilityLeft(event, reservation.dateReserved):
-        raise HTTPException(status_code=404, detail="Event with id " +
-                            id + " has no more availability for " + reservation.dateReserved)
-
-    eventRepository.editEventWithId(
-        id, {'attendance': event['attendance'] + 1})
-    reservation.event_id = id
-    reservation_event = jsonable_encoder(reservation)
-    created_reservation = eventRepository.create_reservation(reservation_event)
-    # TODO: falta cobrar el pago xq la base
-    return {"message": created_reservation}
 
 
 @router.get("/user/event-reservations/{userId}", status_code=status.HTTP_200_OK)
 async def get_event_reservations_for_user(userId: str):
     # TODO: check user cuando exista la base
-    # if username not in registeredUsers.keys():
-    # return HTTPException(status_code=404, detail="User with username " + username + " does not exist.")
+    user = userRepository.getUser(userId)
+    if user is None:
+        return HTTPException(status_code=404, detail="El usuario no se encuentra en la base de datos.")
+    print(user)
     userReservedEvents = eventRepository.getEventsFromUser(userId)
     return userReservedEvents
 
@@ -174,6 +200,11 @@ async def get_friendship_requets(userId: str):
     usersFound = userRepository.getFriendRequests(userId)
 
     return usersFound
+
+
+@router.get("/transactions/{userId}", status_code=status.HTTP_200_OK)
+async def get_transactions(userId: str):
+    return eventRepository.getTransactionsFromUser(userId)
 
 
 @router.post("/user/{userId}/acceptRequest")

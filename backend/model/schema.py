@@ -48,3 +48,10 @@ class Reservation(BaseModel):
     userid: str
     dateReserved: datetime
     typeOfCard: str
+
+class Transaction(BaseModel):
+    event_id: str
+    userId: str
+    date: datetime
+    typeOfCard: str
+    paymentAmount: int

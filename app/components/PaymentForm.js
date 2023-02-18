@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { TextInput, View, StyleSheet, Text } from "react-native"
+import { TextInput, View, StyleSheet, Text, ActivityIndicator, Alert } from "react-native"
 import Colors from '../constants/Colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Button from './Button';
 import MaskInput from 'react-native-mask-input';
 import { Picker } from "@react-native-picker/picker";
+import AppConstants from '../constants/AppConstants';
+import { useNavigation, StackActions } from '@react-navigation/native';
 
 
 const cardTypes = [
@@ -22,10 +24,19 @@ const maskCVV = [ /\d/, /\d/, /\d/ ];
 const maskCard = [ /\d/, /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/ ];
 const maskExpire = [ /\d/, /\d/, '/', /\d/, /\d/ ];
 
+const initialState = {
+    cardHolderName: "",
+    cardType: "debit",
+    cardNumber: {"masked":"", "unmasked":""},
+    expireDate: {"masked":"", "unmasked":""},
+    cvv: {"masked":"", "unmasked": ""}
+};
 
-export default function PaymentForm () {
+export default function PaymentForm ( { event } ) {
 
     const fontSize = 14;
+    const navigation = useNavigation();
+    const [loading, setLoading] = useState(false);
 
 
     const styles = StyleSheet.create({
@@ -55,13 +66,87 @@ export default function PaymentForm () {
         }
     });
 
-    const [stateForm, setStateForm] = useState({
-        cardHolderName: "",
-        cardType: "debit",
-        cardNumber: {"masked":"", "unmasked":""},
-        expireDate: {"masked":"", "unmasked":""},
-        cvv: {"masked":"", "unmasked": ""}
-    });
+    const [stateForm, setStateForm] = useState(initialState);
+
+
+    const clearForm = () => {
+        setStateForm(initialState);
+    }
+
+
+    const handleFinish = () => {
+        clearForm();
+        navigation.pop();
+    }
+
+
+    const validateForm = () => {
+        let valid = true;
+        if(stateForm.cardHolderName === "" || stateForm.cardNumber.unmasked === "" || stateForm.cardType === "" || stateForm.expireDate === "" || stateForm.cvv === ""){
+            valid = false;
+        }
+        if(stateForm.cvv.unmasked.length < 3){
+            valid = false;
+        }
+        if(stateForm.cardNumber.unmasked.length < 16){
+            valid = false;
+        }
+        if(stateForm.expireDate.unmasked.length < 4){
+            valid = false;
+        }
+        if(parseInt(stateForm.expireDate.unmasked.substr(2,2)) < parseInt(new Date().getFullYear().toString().substr(2,2))){
+            valid = false;
+        }
+        return valid;
+    }
+
+
+    const submitPayment = async () => {
+        const userId = "francobatastini@mail.com"; //TODO: Change
+        setLoading(true);
+        if(validateForm()){
+            const paramsPost = {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userid: userId, 
+                    dateReserved: event.isoStringDate,
+                    typeOfCard: stateForm.cardType
+                })
+            };
+            const url = `${AppConstants.API_URL}/event/reserve/${event._id}`;
+            const response = await fetch(
+                url,
+                paramsPost
+            );
+            const jsonResponse = await response.json();
+            if (response.status === 200){
+                setLoading(false);
+                if(!jsonResponse.status_code){
+                    Alert.alert(
+                        "Reserva Registrada", 
+                        "Su pago ha sido efectuado correctamente. Al cerrar este diálogo será redireccionado a la página principal y podrá encontrar su ticket dentro de \"Mis Eventos\".",
+                        [
+                            {
+                                text: "OK",
+                                onPress: () => handleFinish()
+                            }
+                        ]
+                    );
+                }else{
+                    Alert.alert("Error en la compra", "Ocurrio un error al intentar comprar su ticket. Vuelva a intentarlo más tarde.");
+                }
+            }else{
+                setLoading(false);
+                Alert.alert("Error en la compra", "Ocurrio un error al intentar comprar su ticket. Vuelva a intentarlo más tarde.");
+            }
+        }else{
+            setLoading(false);
+            Alert.alert("Campos Faltantes", "Aún hay campos faltantes o sin completar. Revise el formulario e intentelo de nuevo.")
+        }
+    }
 
 
     return (
@@ -112,12 +197,21 @@ export default function PaymentForm () {
                     <MaskInput
                         value={stateForm.expireDate.masked}
                         onChangeText={(masked, unmasked) => {
-                            let month = parseInt(masked.split("/")[0]);
+                            let month;
+                            if(masked.split("/")[0].length === 2){
+                                if(masked.split("/")[0] === "00"){
+                                    month = "01";
+                                }else{
+                                    month = parseInt(masked.split("/")[0]).toString().padStart(2, "0");
+                                }
+                            }else{
+                                month = parseInt(masked.split("/")[0]);
+                            }
                             let year = "";
                             if(masked.split("/").length > 1){
                                 year = masked.split("/")[1];
                             }
-                            if (month > 12) month = 12;
+                            if (parseInt(masked.split("/")[0]) > 12) month = 12;
                             if (year != ""){
                                 masked = `${month.toString()}/${year.toString()}`;
                                 unmasked = month.toString()+year.toString();
@@ -148,10 +242,19 @@ export default function PaymentForm () {
                 </View>
             </View>
             <View style={{marginTop: 20}}>
-                <Button title="FINALIZAR COMPRA" titleStyle={{paddingRight: 20, left: -10}} onPress={() => console.log("SUBMITEE")}/>
-                <View style={{ justifyContent: 'center', position: 'absolute', right: 10, alignContent: 'center' }}>
-                        <Ionicons name={"wallet-outline"} color={Colors.BLACK} size={35} style={{marginTop:15}} />
-                </View>
+                {
+                loading 
+                ? 
+                    <ActivityIndicator size="large" color="#00ff00" />
+                :
+                    <>
+                        <Button title="FINALIZAR COMPRA" titleStyle={{paddingRight: 20, left: -10}} onPress={() => submitPayment()}/>
+                        <View style={{ justifyContent: 'center', position: 'absolute', right: 10, alignContent: 'center' }}>
+                            <Ionicons name={"wallet-outline"} color={Colors.BLACK} size={35} style={{marginTop:15}} />
+                        </View>
+                    </>
+                }
+                
             </View>
         </View>
     );

@@ -53,7 +53,7 @@ export default function EventPaymentForm ( { route } ) {
                         </View>
                     </View>
                 </View>
-                <PaymentForm/>
+                <PaymentForm event={event}/>
             </ScrollView>
         </View>
     );

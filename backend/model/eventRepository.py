@@ -9,11 +9,13 @@ from bson.objectid import ObjectId
 
 
 
+
 class EventRepository:
     def __init__(self):
         self.mongo = MongoClient(settings.mongodb_uri, settings.mongodb_port)
         self.database = self.mongo["events"]
         self.reserveEvents = self.mongo["reservedEvents"]
+        self.transactions = self.mongo["transactions"]
         
 
     def getEventWithId(self, id: str):
@@ -57,12 +59,27 @@ class EventRepository:
     def create_reservation(self, reservation: dict):
         new_event_reservation = self.reserveEvents["reservedEvents"].insert_one(reservation)
         event_reservation_created = self.reserveEvents["reservedEvents"].find_one({"_id": new_event_reservation.inserted_id})
+         
         return json.loads(json_util.dumps(event_reservation_created))
         
     def getEventsFromUser(self, userId: str):
-        reservedEvents = self.reserveEvents["reservedEvents"].find(filter=userId)
+        filter = {'userid': userId}
+        reservedEvents = self.reserveEvents["reservedEvents"].find(filter=filter)
         events = list(json.loads(json_util.dumps(reservedEvents)))
         return events
-        
+
+    def getTransactionsFromUser(self, userId: str):
+        filter = {'userId': userId}
+        print(filter)
+        returnedTransactions = self.transactions["transactions"].find(filter=filter)
+        print(returnedTransactions)
+        txs = list(json.loads(json_util.dumps(returnedTransactions)))
+        return txs
+
+    def createTransaction(self, tx: dict):
+        transaction = self.transactions["transactions"].insert_one(tx)
+        newTransaction = self.transactions["transactions"].find_one({"_id": transaction.inserted_id})
+        return json.loads(json_util.dumps(newTransaction))
+
     def disconnectDB(self):
         self.mongo.close()

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, Text, View, ActivityIndicator, RefreshControl } from 'react-native';
+import { ScrollView, Text, View, ActivityIndicator, RefreshControl, Dimensions } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Colors from '../constants/Colors';
@@ -19,7 +19,7 @@ export default function EventsScreen({ route, navigaton }) {
 
 
     return (
-        <View style={{ backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, paddingBottom: 100 }}>
+        <View style={{ backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, paddingBottom: 100, minHeight:Dimensions.get("window").height }}>
             
             <HeaderUser navigation={navigaton}/>
 
