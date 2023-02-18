@@ -162,14 +162,29 @@ async def send_friendship_request(fromUserId: str, toUserId: str):
     repoReturn = userRepository.getUserById(toUserId)
     if repoReturn is None:
         return HTTPException(status_code=404, detail="El usuario al que desea hacer amigo no se encuentra en la base de datos.")
-    return {"message": "request sent"}
-
     userRepository.sendRequest(fromUserId, toUserId)
+    return {"message": "request sent"}
 
 
 @router.get("/user/{userId}/friendRequests")
 async def get_friendship_requets(userId: str):
+    repoReturn = userRepository.getUserById(userId)
+    if repoReturn is None:
+        return HTTPException(status_code=404, detail="No existe el usuario con id "+userId)
     usersFound = userRepository.getFriendRequests(userId)
-    if usersFound is None or len(usersFound) == 0:
-        return HTTPException(status_code=404, detail="El usuario no se encuentra en la base de datos.")
+
     return usersFound
+
+
+@router.post("/user/{userId}/acceptRequest")
+async def accept_friend_request(userId: str, friendId: str):
+    res = ""
+    try:
+        res = userRepository.acceptFriendRequest(userId, friendId)
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=404, detail="Error mientras se acepta amistad: ")
+    if len(res) == 0:
+        raise HTTPException(status_code=400, detail="Request inexistente")
+    return {"message": "Friend Added"}

@@ -32,6 +32,9 @@ class UserRepository:
     def getFriendRequests(self, userId):
         return self.usersDB.execute_read(self._getFriendRequests, userId)
 
+    def acceptFriendRequest(self, userId, friendId):
+        return self.usersDB.execute_write(self._acceptFriendRequests, userId, friendId)
+
     @staticmethod
     def _getUser(tx, email: str):
         try:
@@ -95,12 +98,12 @@ class UserRepository:
 
     @staticmethod
     def _send_request(tx, fromUserId, toUserId):
-        tx.run("MATCH"
-               "(a:User),"
-               "(b:User)"
+        tx.run("MATCH (a:User), (b:User)"
                " WHERE ID(a) = $fromUserId AND ID(b) = $toUserId"
+               " AND NOT EXISTS((a)-[:REQUEST]->(b))"
+               " AND NOT EXISTS((a)-[:FRIEND]->(b))"
                " CREATE (a)-[r:REQUEST]->(b)"
-               " RETURN type(r) ",
+               " RETURN type(r)",
                fromUserId=fromUserId, toUserId=toUserId
                )
 
@@ -111,16 +114,29 @@ class UserRepository:
                             " RETURN user", userId=int(userId))
         return _process_user_nodes(user_nodes)
 
+    @staticmethod
+    def _acceptFriendRequests(tx, userId, friendId):
+        a = tx.run("MATCH (node_1)<-[r:REQUEST]-(node_2)"
+                   " WHERE ID(node_1) = $node1_id AND ID(node_2) = $node2_id"
+                   " DELETE r"
+                   " WITH node_1, node_2"
+                   " CREATE (node_1)-[f:FRIEND]->(node_2)"
+                   " RETURN f",
+                   node1_id=int(userId), node2_id=int(friendId))
+
+        return a.data()
+
 
 def _process_user_nodes(user_nodes):
     results_list = []
-    # print(user_nodes.data())
-    for record in user_nodes.data():
+    for record in user_nodes.values():
+        node = record[0]
         results_list.append(
             {
-                "name": record["user"]["name"],
-                "email": record["user"]["email"],
-                "profilePic": record["user"]["profile_pic"]
+                "id": node.id,
+                "name": node.get("name"),
+                "email": node.get("email"),
+                "profilePic": node.get("profile_pic")
             }
         )
 
