@@ -8,8 +8,10 @@ import Button from '../components/Button';
 import { useGlobalAuthActionsContext, useGlobalAuthContext } from '../utils/ContextFactory';
 import { login } from '../utils/NetworkAPI';
 import ValidationUtils from '../utils/ValidationUtils';
+import { getFirebaseImage } from '../utils/FirebaseHandler';
 
 const EventifyLogo = require('../assets/eventify-logo.png');
+const DEFAULT_PROFILE_PIC = 'https://www.pngkey.com/png/detail/121-1219231_user-default-profile.png';
 
 export default function LoginScreen({ route, navigation }) {
     const appAuthContext = useGlobalAuthContext();
@@ -33,15 +35,12 @@ export default function LoginScreen({ route, navigation }) {
         login(emailInput, passwordInput)
         .then(loginResponse => {
             if (ValidationUtils.isEmpty(loginResponse.status_code)) {
-                appAuthContext.userSession.logIn(loginResponse.user)
-                .then(sessionInitialized => {
-                    if (sessionInitialized) {
-                        setAppAuthContext((prevState) => ({
-							...prevState,
-							userSession: appAuthContext.userSession
-						}));
-                    }
-                })
+                getFirebaseImage(`files/${loginResponse.user.profilePic}`)
+                .then(uriImage => doLocalLogin(loginResponse.user, uriImage))
+                .catch(error => {
+                    console.log('Error getting profile pic', error);
+                    doLocalLogin(loginResponse.user, DEFAULT_PROFILE_PIC);
+                });
             }
             else {
                 Alert.alert(
@@ -60,6 +59,23 @@ export default function LoginScreen({ route, navigation }) {
             );
         })
         .finally(() => setLoading(false));
+    }
+
+    const doLocalLogin = (user, profilePic) => {
+        appAuthContext.userSession.logIn({
+            name: user.name,
+            email: user.email,
+            profilePic: profilePic,
+            money: user.money
+        })
+        .then(sessionInitialized => {
+            if (sessionInitialized) {
+                setAppAuthContext((prevState) => ({
+                    ...prevState,
+                    userSession: appAuthContext.userSession
+                }));
+            }
+        });
     }
 
     return (

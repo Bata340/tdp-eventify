@@ -32,8 +32,7 @@ export default class Session {
     }
 
     getUserAvatar = () => {
-        return 'https://www.pngkey.com/png/detail/121-1219231_user-default-profile.png'
-        //return this.user?.profilePic ?? 'https://www.pngkey.com/png/detail/121-1219231_user-default-profile.png';
+        return this.user?.profilePic;
     }
 
     getUserMoney = () => {
