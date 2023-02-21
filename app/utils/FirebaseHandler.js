@@ -2,7 +2,6 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { ref, uploadBytesResumable, getDownloadURL, getStorage, deleteObject } from "firebase/storage";
-import storage from '@react-native-firebase/storage';
 let md5 = require("md5");
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries

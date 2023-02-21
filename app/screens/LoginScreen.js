@@ -6,6 +6,9 @@ import Fontisto from '@expo/vector-icons/Fontisto';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Button from '../components/Button';
 import { useGlobalAuthActionsContext, useGlobalAuthContext } from '../utils/ContextFactory';
+import { login } from '../utils/NetworkAPI';
+import ValidationUtils from '../utils/ValidationUtils';
+
 const EventifyLogo = require('../assets/eventify-logo.png');
 
 export default function LoginScreen({ route, navigation }) {
@@ -14,27 +17,49 @@ export default function LoginScreen({ route, navigation }) {
 
     const [emailInput, setEmailInput] = useState("");
     const [passwordInput, setPasswordInput] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const tryLogin = () => {
         if (emailInput == "" || passwordInput == "") {
             return Alert.alert('Completa los datos por favor');
         }
 
-        appAuthContext.userSession.logIn({
-            id: 1,
-            email: 'diego.lopez@gmail.com',
-            fullName: 'Diego Lopez',
-            avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8dXNlcnxlbnwwfHwwfHw%3D&w=1000&q=80'
-        })
-        .then(sessionInitialized => {
-            if (sessionInitialized) {
-                setAppAuthContext((prevState) => ({
-                    ...prevState,
-                    userSession: appAuthContext.userSession,
-                    loading: false
-                }));
+        if (loading) {
+            return;
+        }
+
+        setLoading(true);
+
+        login(emailInput, passwordInput)
+        .then(loginResponse => {
+            if (ValidationUtils.isEmpty(loginResponse.status_code)) {
+                appAuthContext.userSession.logIn(loginResponse.user)
+                .then(sessionInitialized => {
+                    if (sessionInitialized) {
+                        setAppAuthContext((prevState) => ({
+							...prevState,
+							userSession: appAuthContext.userSession
+						}));
+                    }
+                })
+            }
+            else {
+                Alert.alert(
+                    'Error iniciando sesion',
+                    !ValidationUtils.isEmpty(loginResponse.detail) ? loginResponse.detail : 'Hubo un error intentando iniciar sesion',
+                    [{ text: 'Entendido' }]
+                );
             }
         })
+        .catch(e => {
+            console.log(e);
+            Alert.alert(
+                'Error iniciando sesion',
+                'Hubo un error intentando iniciar sesion',
+                [{ text: 'Entendido' }]
+            );
+        })
+        .finally(() => setLoading(false));
     }
 
     return (
@@ -54,14 +79,14 @@ export default function LoginScreen({ route, navigation }) {
                         <EventifyTextInput value={emailInput} onChangeText={setEmailInput} name="Correo electronico" autoCapitalize={false} leftIcon={<Fontisto name="email" color={Colors.GRAY} size={23} />} inputTextColor={Colors.GRAY} fontSize={23} placeholderTextColor={Colors.GRAY} keyboardType="email-address" />
                         <EventifyTextInput value={passwordInput} onChangeText={setPasswordInput} name="Clave" autoCapitalize={false} leftIcon={<Ionicons name="md-key-outline" color={Colors.GRAY} size={23} />} inputTextColor={Colors.GRAY} fontSize={23} placeholderTextColor={Colors.GRAY} isPassword={true} />
                         <View style={{ width: '100%', height: 30 }}>
-                            <Button onPress={tryLogin} buttonStyle={{ alignSelf: 'center', position: 'absolute', top: -10 }} title="INGRESAR" type="medium" titleSize={25} titleColor={Colors.WHITE} color={Colors.PRIMARY} />
+                            <Button disabled={loading} onPress={tryLogin} buttonStyle={{ alignSelf: 'center', position: 'absolute', top: -10 }} title={loading ? "INGRESANDO..." : "INGRESAR"} type="medium" titleSize={25} titleColor={Colors.WHITE} color={Colors.PRIMARY} />
                         </View>
                     </View>
 
                 <View style={{ width: '100%', alignItems: 'center', marginTop: 70 }}>
                         <Text style={{ color: Colors.WHITE, fontWeight: 'bold', fontSize: 23, marginBottom: 40 }}>Olvidaste tu clave?</Text>
                         <Text style={{ color: Colors.PRIMARY_GRAYED, fontSize: 20, marginBottom: 15 }}>Aun no estas registrado?</Text>
-                        <Text onPress={() => { navigation.navigate("Register");}} style={{ color: Colors.PRIMARY_VERY_LIGHT, fontWeight: 'bold', fontSize: 26 }} >Registrate</Text>
+                        <Text onPress={() => { !loading && navigation.navigate("Register");}} style={{ color: Colors.PRIMARY_VERY_LIGHT, fontWeight: 'bold', fontSize: 26 }} >Registrate</Text>
                 </View>
                 </View>
             

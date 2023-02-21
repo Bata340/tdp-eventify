@@ -10,7 +10,7 @@ import EventQR from './screens/EventQR';
 import SettingsScreen from './screens/SettingsScreen';
 import WalletScreen from './screens/WalletScreen';
 import Colors from './constants/Colors';
-import { LogBox, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import FavoritesScreen from './screens/FavoritesScreen';
 import LoginScreen from './screens/LoginScreen';
 import { StatusBar } from 'expo-status-bar';
@@ -22,8 +22,6 @@ import EventPaymentForm from './screens/EventPaymentForm';
 import EditEventScreen from './screens/EditEventScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import ShowPeople from './screens/ShowPeople';
-
-LogBox.ignoreAllLogs();
 
 function LoginStack() {
   const LoginStack = createNativeStackNavigator();

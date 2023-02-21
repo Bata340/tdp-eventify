@@ -28,11 +28,16 @@ export default class Session {
     }
 
     getUserFullName = () => {
-        return this.user?.fullName;
+        return this.user?.name;
     }
 
     getUserAvatar = () => {
-        return this.user?.avatar;
+        return 'https://www.pngkey.com/png/detail/121-1219231_user-default-profile.png'
+        //return this.user?.profilePic ?? 'https://www.pngkey.com/png/detail/121-1219231_user-default-profile.png';
+    }
+
+    getUserMoney = () => {
+        return this.user?.money;
     }
 
     clean() {
