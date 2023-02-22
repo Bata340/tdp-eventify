@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, View, Text, TouchableOpacity, EventSubscriptionVendor } from 'react-native';
+import { Image, View, Text, TouchableOpacity, EventSubscriptionVendor, Alert } from 'react-native';
 import Colors from '../constants/Colors';
 import Button from './Button';
 import { useNavigation } from '@react-navigation/native';
@@ -7,6 +7,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useGlobalAuthActionsContext, useGlobalAuthContext } from '../utils/ContextFactory';
+import AppConstants from '../constants/AppConstants';
 
 export default function EventCard({
     event = {},
@@ -14,6 +15,7 @@ export default function EventCard({
 }) {
     const appAuthContext = useGlobalAuthContext();
     const setAppAuthContext = useGlobalAuthActionsContext();
+    const userEmail = appAuthContext.userSession.getUserEmail();
     const [isFaved, setIsFaved] = useState(false);
     const navigation = useNavigation();
 
@@ -42,6 +44,73 @@ export default function EventCard({
 
     const onCardPress = () => {
         navigation.navigate('EventDetail', { event, isBuy });  
+    }
+
+
+    const handleDelete = async () => {
+        const paramsDel = {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+        const url = `${AppConstants.API_URL}/event/${event._id}`;
+        const response = await fetch(
+            url,
+            paramsDel
+        );
+        const jsonResponse = await response.json();
+        if (response.status === 200){
+            if(!jsonResponse.status_code){
+                Alert.alert(
+                    "Borrado exitoso", 
+                    "El evento ha sido borrado exitosamente.",
+                    [
+                        {
+                            text: "OK"
+                        }
+                    ]
+                ); 
+            }else{
+                Alert.alert(
+                    "Error al borrar", 
+                    json_response.detail,
+                    [
+                        {
+                            text: "OK"
+                        }
+                    ]
+                );
+            }
+        }else{
+            Alert.alert(
+                "Error al borrar", 
+                "Error al intentar eliminar el evento. Intente nuevamente.",
+                [
+                    {
+                        text: "OK"
+                    }
+                ]
+            );
+        }
+    }
+
+
+    const showDeleteAlert = () => {
+        Alert.alert(
+            `¿Está seguro que desea borrar el evento ${event.name}?`, 
+            "Si borra este evento ya no podrá recuperarlo posteriormente. ¿Desea continuar?",
+            [
+                {
+                    text: "BORRAR",
+                    onPress: () => handleDelete(),
+                    style: {color: "red"}
+                },
+                {
+                    text: "CANCELAR"
+                }
+            ]
+        );
     }
 
     return (
@@ -75,21 +144,42 @@ export default function EventCard({
                     >
                         $ {parseFloat(event.price).toFixed(2)}
                     </Text>
-                    <Button
-                        title="Comprar"
-                        titleColor={Colors.PRIMARY_VERY_DARK_GRAYED}
-                        color={Colors.PRIMARY_LIGHT}
-                        buttonStyle={{ verticalPadding: 30 }}
-                        onPress = {() => navigation.navigate("EventPayment", { event })}
-                    />
-                    {/*BOTON PROVISORIO PARA VER EL EDIT DE EVENTOS*/}
-                    <Button
-                        title="QR"
-                        titleColor={Colors.PRIMARY_VERY_DARK_GRAYED}
-                        color={Colors.PRIMARY_LIGHT}
-                        buttonStyle={{ verticalPadding: 30 }}
-                        onPress = {() => navigation.navigate("EventQR", { event })}
-                    />
+                    {
+                    (event.owner == userEmail) ?
+                        <>
+                            <Button
+                                title="Editar"
+                                titleColor={Colors.PRIMARY_VERY_DARK_GRAYED}
+                                color={Colors.PRIMARY_LIGHT}
+                                buttonStyle={{ verticalPadding: 30 }}
+                                onPress = {() => {navigation.navigate("EventEdit", {"event": event})}}
+                            />
+                            <Button
+                                title="Borrar"
+                                titleColor={Colors.WHITE}
+                                color={"#ff0000"}
+                                buttonStyle={{ verticalPadding: 30 }}
+                                onPress = {() => {showDeleteAlert();}}
+                            />
+                        </>
+                    :
+                        (isBuy ? 
+                        <Button
+                            title="Comprar"
+                            titleColor={Colors.PRIMARY_VERY_DARK_GRAYED}
+                            color={Colors.PRIMARY_LIGHT}
+                            buttonStyle={{ verticalPadding: 30 }}
+                            onPress = {() => navigation.navigate("EventPayment", { event })}
+                        /> :
+                        <Button
+                            title="Ver QR"
+                            titleColor={Colors.PRIMARY_VERY_DARK_GRAYED}
+                            color={Colors.PRIMARY_LIGHT}
+                            buttonStyle={{ verticalPadding: 30 }}
+                            onPress = {() => {navigation.navigate("EventQR", {"dataQR": event.dataQR, "event": event})}}
+                        />
+                        )
+                    }
                 </View>
             </TouchableOpacity>
         </>

@@ -1,16 +1,90 @@
 import React from 'react';
-import { Image, Text, TouchableHighlight, View, ScrollView } from 'react-native';
+import { Image, Text, TouchableHighlight, View, ScrollView, Alert } from 'react-native';
 import Colors from '../constants/Colors';
 import Feather from '@expo/vector-icons/Feather';
 import Entypo from '@expo/vector-icons/Entypo';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Button from '../components/Button';
 import { LinearGradient } from 'expo-linear-gradient';
+import { StackActions } from '@react-navigation/native';
+import { useGlobalAuthContext } from '../utils/ContextFactory';
+import AppConstants from '../constants/AppConstants';
 
 export default function EventDetailScreen({ route, navigation }) {
 
     const event = route.params?.event;
     const isBuy = route.params?.isBuy;
+    const appAuthContext = useGlobalAuthContext();
+    const userEmail = appAuthContext.userSession.getUserEmail();
+
+
+    const handleDelete = async () => {
+        const paramsDel = {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+        const url = `${AppConstants.API_URL}/event/${event._id}`;
+        const response = await fetch(
+            url,
+            paramsDel
+        );
+        const jsonResponse = await response.json();
+        if (response.status === 200){
+            if(!jsonResponse.status_code){
+                Alert.alert(
+                    "Borrado exitoso", 
+                    "El evento ha sido borrado exitosamente.",
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => {navigation.dispatch(StackActions.pop(1));}
+                        }
+                    ]
+                ); 
+            }else{
+                Alert.alert(
+                    "Error al borrar", 
+                    json_response.detail,
+                    [
+                        {
+                            text: "OK"
+                        }
+                    ]
+                );
+            }
+        }else{
+            Alert.alert(
+                "Error al borrar", 
+                "Error al intentar eliminar el evento. Intente nuevamente.",
+                [
+                    {
+                        text: "OK"
+                    }
+                ]
+            );
+        }
+    }
+
+
+    const showDeleteAlert = () => {
+        Alert.alert(
+            `¿Está seguro que desea borrar el evento ${event.name}?`, 
+            "Si borra este evento ya no podrá recuperarlo posteriormente. ¿Desea continuar?",
+            [
+                {
+                    text: "BORRAR",
+                    onPress: () => handleDelete(),
+                    style: {color: "red"}
+                },
+                {
+                    text: "CANCELAR"
+                }
+            ]
+        );
+    }
+
 
     return (
         <View style={{ flexDirection: 'column', width: '100%', paddingTop: 50, height: '100%', backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, alignContent: 'center' }}>
@@ -44,7 +118,25 @@ export default function EventDetailScreen({ route, navigation }) {
                 </View>
                 <View style={{ marginTop: 20, paddingBottom: 20, width: '100%', alignContent: 'center' }}>
                     {
-                        isBuy?
+                    event.owner == userEmail ?
+                    <>
+                        <Button
+                            title="Editar"
+                            titleColor={Colors.PRIMARY_VERY_DARK_GRAYED}
+                            color={Colors.PRIMARY_LIGHT}
+                            buttonStyle={{ verticalPadding: 30, paddingHorizontal: 100, marginBottom: 20 }}
+                            onPress = {() => {navigation.navigate("EventEdit", {"event": event})}}
+                        />
+                        <Button
+                            title="Borrar"
+                            titleColor={Colors.WHITE}
+                            color={"#ff0000"}
+                            buttonStyle={{ verticalPadding: 30, paddingHorizontal: 100 }}
+                            onPress = {() => {showDeleteAlert();}}
+                        />
+                    </>
+                    :
+                        (isBuy?
                             <Button 
                                 type="large"
                                 title="COMPRAR" 
@@ -63,7 +155,7 @@ export default function EventDetailScreen({ route, navigation }) {
                                 titleSize={20}
                                 titleStyle={{ fontWeight: "bold", textAlign:"center" }}
                                 numOfLines={2}
-                            />
+                            />)
                     }
                 </View>
             </ScrollView>

@@ -1,4 +1,4 @@
-import { View, Image, TouchableHighlight, Text } from 'react-native';
+import { View, Image, TouchableHighlight, Text, ActivityIndicator } from 'react-native';
 import Colors from '../constants/Colors';
 import ScreenTitle from '../components/ScreenTitle';
 import QRCode from 'react-native-qrcode-svg';
@@ -8,10 +8,10 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 export default function AddEventScreen ({route}) {
 
     const event = route.params?.event;
+    const dataQR = route.params?.dataQR;
 
     return (
         <>
-            
             <View style={{ backgroundColor: Colors.PRIMARY_VERY_DARK, paddingBottom: 50, paddingTop: 100, height: "100%"}}>
                 <View style={{alignItems: "center", justifyContent:"center"}}>
                     <TouchableHighlight
@@ -27,7 +27,7 @@ export default function AddEventScreen ({route}) {
                 <View style={{alignItems: "center", justifyContent:"center", marginTop:20}}>
                     <QRCode
                         size={300}
-                        value = "QR DE PRUEBA"
+                        value = {JSON.stringify(dataQR)}
                     />
                 </View>
             </View>

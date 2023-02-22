@@ -1,35 +1,36 @@
 import React, { useEffect, useState } from 'react'
-import { ScrollView, View, ActivityIndicator, RefreshControl } from 'react-native';
-import Button from './Button';
-import Colors from '../constants/Colors';
+import { ScrollView, View, ActivityIndicator, RefreshControl, Image, Text } from 'react-native';
 import AppConstants from '../constants/AppConstants';
 import EventCard from './EventCard';
 import { getFirebaseImage } from '../utils/FirebaseHandler';
-import { useNavigation } from '@react-navigation/native';
+import { useGlobalAuthContext } from '../utils/ContextFactory';
+const NoEventsPhoto = require('../assets/events.png');
 
 const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
+export const MyEventsList = () => {
 
-export const EventsList = (id_persona = '') => {
-
+    const appAuthContext = useGlobalAuthContext();
+    const userEmail = appAuthContext.userSession.getUserEmail();
     const [events, setEvents] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
-    const navigation = useNavigation();
+    const [isLoading, setIsLoading] = useState(true);
 
 
-    async function getEvents(){
+    async function getMyEvents(){
         const paramsGet = {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
             }
         };
-        const url = `${AppConstants.API_URL}/events`;
+        const url = `${AppConstants.API_URL}/events?owner=${userEmail}`;
         const response = await fetch(
             url,
             paramsGet
         );
         const jsonResponse = await response.json();
+        
         if (response.status === 200){
             if(!jsonResponse.status_code){
                 const arrayEvents = [];
@@ -54,23 +55,26 @@ export const EventsList = (id_persona = '') => {
                         description: jsonResponse[i].description,
                         price: jsonResponse[i].price,
                         owner: jsonResponse[i].owner,
-                        image: imageURI
+                        image: imageURI,
                     });
                 }
+                setIsLoading(false);
                 setEvents(arrayEvents);
             }
+        }else{
+            setIsLoading(false);
         }     
     }
   
   
     useEffect( () => {
-        getEvents();
+        getMyEvents();
     // eslint-disable-next-line
     }, []);
 
     const onRefresh = async () => {
         setRefreshing(true);
-        await getEvents();
+        await getMyEvents();
         setRefreshing(false);
     }
 
@@ -83,8 +87,14 @@ export const EventsList = (id_persona = '') => {
             }
         >
             {
-            events.length > 0 ?
-                events.map(e => <EventCard key={'event-card-' + e.id+'-'+e._id} event={e} />)
+            !isLoading ?
+                (events.length > 0 ?
+                events.map(e => <EventCard key={'event-card-' + '-' + e._id} event={e} />)
+                : 
+                <View style={{alignItems: 'center', borderWidth:5, borderRadius:20, borderColor: 'black', padding:10}}>
+                    <Image style={{ height: 150, width:150 }} source={NoEventsPhoto}/>
+                    <Text style={{fontSize: 20, color:"white", marginTop: 10}}>Aún no posees eventos creados...</Text>
+                </View>)
             :
                 <ActivityIndicator size="large" color="#00ff00" />
             }

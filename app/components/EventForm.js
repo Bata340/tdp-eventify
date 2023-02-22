@@ -10,6 +10,8 @@ import { uploadImageToStorageWithURI } from '../utils/FirebaseHandler';
 import AppConstants from '../constants/AppConstants';
 import { useNavigation, StackActions } from '@react-navigation/native';
 import { getFirebaseImage } from '../utils/FirebaseHandler';
+import { useGlobalAuthContext } from '../utils/ContextFactory';
+
 
 
 const categories = [
@@ -62,6 +64,9 @@ export default function EventForm ({
 
     const fontSize = 14;
     const navigation = useNavigation();
+
+    const appAuthContext = useGlobalAuthContext();
+    const userEmail = appAuthContext.userSession.getUserEmail();
 
 
     const styles = StyleSheet.create({
@@ -216,7 +221,7 @@ export default function EventForm ({
             body: JSON.stringify({
                 "key": stateForm.name+"_"+AppConstants.ASYNC_STORAGE_KEYS.LOGGED_USER,
                 "name": stateForm.name,
-                "owner": AppConstants.ASYNC_STORAGE_KEYS.LOGGED_USER,
+                "owner": userEmail,
                 "price": parseFloat(stateForm.price),
                 "description": stateForm.description,
                 "location": stateForm.location,
