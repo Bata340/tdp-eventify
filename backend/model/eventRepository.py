@@ -66,6 +66,8 @@ class EventRepository:
         filter = {'userid': userId}
         reservedEvents = self.reserveEvents["reservedEvents"].find(filter=filter)
         events = list(json.loads(json_util.dumps(reservedEvents)))
+        for event in events:
+            event["event_data"] = self.getEventWithId(event["event_id"])
         return events
 
     def getTransactionsFromUser(self, userId: str):

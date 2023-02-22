@@ -1,9 +1,0 @@
-.imgCard{
-    max-height: 20vh
-}
-
-@media (max-width:600px){
-    .imgCard{
-        max-height: 30vh
-    }
-}

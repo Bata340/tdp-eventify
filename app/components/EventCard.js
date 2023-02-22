@@ -83,13 +83,13 @@ export default function EventCard({
                         onPress = {() => navigation.navigate("EventPayment", { event })}
                     />
                     {/*BOTON PROVISORIO PARA VER EL EDIT DE EVENTOS*/}
-                    {/*<Button
-                        title="Editar"
+                    <Button
+                        title="QR"
                         titleColor={Colors.PRIMARY_VERY_DARK_GRAYED}
                         color={Colors.PRIMARY_LIGHT}
                         buttonStyle={{ verticalPadding: 30 }}
-                        onPress = {() => navigation.navigate("EventEdit", { event })}
-                    />*/}
+                        onPress = {() => navigation.navigate("EventQR", { event })}
+                    />
                 </View>
             </TouchableOpacity>
         </>

@@ -51,6 +51,7 @@ class UserRepository:
         except:
             return None
         singleRes = result.single()
+        print(singleRes)
         if singleRes is None:
             return None
         else:

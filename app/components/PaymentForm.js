@@ -7,6 +7,7 @@ import MaskInput from 'react-native-mask-input';
 import { Picker } from "@react-native-picker/picker";
 import AppConstants from '../constants/AppConstants';
 import { useNavigation, StackActions } from '@react-navigation/native';
+import { useGlobalAuthContext } from '../utils/ContextFactory';
 
 
 const cardTypes = [
@@ -37,6 +38,10 @@ export default function PaymentForm ( { event } ) {
     const fontSize = 14;
     const navigation = useNavigation();
     const [loading, setLoading] = useState(false);
+    const appAuthContext = useGlobalAuthContext();
+
+    const userEmail = appAuthContext.userSession.getUserEmail();
+    
 
 
     const styles = StyleSheet.create({
@@ -102,7 +107,7 @@ export default function PaymentForm ( { event } ) {
 
 
     const submitPayment = async () => {
-        const userId = "francobatastini@mail.com"; //TODO: Change
+        const userId = userEmail;
         setLoading(true);
         if(validateForm()){
             const paramsPost = {

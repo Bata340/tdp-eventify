@@ -62,7 +62,8 @@ async def login(user: schema.UserLogin):
             "name": repoReturn.get("name"),
             "email": repoReturn.get("email"),
             "profilePic": repoReturn.get("profile_pic"),
-            "money": repoReturn.get("money")
+            "money": repoReturn.get("money"),
+            "id": repoReturn.id
         }
     }
 
@@ -83,9 +84,7 @@ async def getEvents(owner: Optional[str] = None):
 @router.post("/event")
 async def publishEvent(event: schema.Event):
     event.eventDates = convertDatetime(event.eventDates)
-    print(event.eventDates)
     event_aux = jsonable_encoder(event)
-    print(event_aux)
     created_event = eventRepository.createEvent(event_aux)
     return {"message": created_event}
 
@@ -127,8 +126,6 @@ async def reserveEvent(id: str, reservation: schema.Reservation):
 
         reservation.dateReserved = reservation.dateReserved.__format__(
             "%Y-%m-%dT%H:%M:%SZ")
-        print(reservation.dateReserved)
-        print(event['eventDates'])
         if (len(event['eventDates']) > 0) and (reservation.dateReserved not in event['eventDates']):
             raise HTTPException(status_code=404, detail="Event with id " +
                                 id + " has no date " + reservation.dateReserved)
@@ -178,7 +175,6 @@ async def get_event_reservations_for_user(userId: str):
     user = userRepository.getUser(userId)
     if user is None:
         return HTTPException(status_code=404, detail="El usuario no se encuentra en la base de datos.")
-    print(user)
     userReservedEvents = eventRepository.getEventsFromUser(userId)
     return userReservedEvents
 
@@ -213,7 +209,6 @@ async def accept_friend_request(userId: str, friendId: str):
     try:
         res = userRepository.acceptFriendRequest(userId, friendId)
     except Exception as e:
-        print(e)
         raise HTTPException(
             status_code=404, detail="Error mientras se acepta amistad: ")
     if len(res) == 0:

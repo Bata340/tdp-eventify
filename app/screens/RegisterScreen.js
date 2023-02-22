@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, StyleSheet, ScrollView, Image, View, Alert, TouchableOpacity, Text } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, Image, View, Alert, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import Colors from '../constants/Colors';
 import EventifyTextInput from '../components/EventifyTextInput';
 import Fontisto from '@expo/vector-icons/Fontisto';
@@ -9,10 +9,12 @@ import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AppConstants from '../constants/AppConstants';
 import { uploadImageToStorageWithURI } from '../utils/FirebaseHandler';
+import { useNavigation, StackActions}  from '@react-navigation/native';
 
 const EventifyLogo = require('../assets/eventify-logo.png');
 
-export default function Register({ navigation }) {
+export default function Register() {
+  const navigation = useNavigation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,11 +28,14 @@ export default function Register({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   async function tryRegister () {
+    setLoading(true);
     if (name == "" || email == "" || password == "" || passwordCheck == "") {
+        setLoading(false);
         return Alert.alert('Completa los datos por favor');
     }
 
     if (password != passwordCheck) {
+        setLoading(false);
         return Alert.alert('Las contraseñas ingresadas no coinciden');
     }
 
@@ -77,19 +82,23 @@ export default function Register({ navigation }) {
                 "Su usuario ha sido creado correctamente. Al cerrar este diálogo será redireccionado al Login.",
                 [
                     {
-                        text: "OK"
+                        text: "OK",
+                        onPress: () => navigation.dispatch(StackActions.pop(1))
                     }
                 ]
             );
         }else{
+            if(jsonResponse.status_code){
+                Alert.alert("Error al crear el usuario", jsonResponse.detail);
+            }
             Alert.alert("Error al crear el usuario", "Ocurrio un error al intentar crear su perfil. Vuelva a intentarlo más tarde.");
         }
     }else{
         setLoading(false);
-        Alert.alert("Error al crear el usuario2", "Ocurrio un error al intentar crear su perfil. Vuelva a intentarlo más tarde.");
+        Alert.alert("Error al crear el usuario", "Ocurrio un error al intentar crear su perfil. Vuelva a intentarlo más tarde.");
     }
 
-    navigation.navigate('Login');
+    
   };
 
   const handleGallery = async () => {
@@ -151,7 +160,10 @@ export default function Register({ navigation }) {
                 </TouchableOpacity>
             </View>
                 <View style={{ width: '100%', height: '1000%' }}>
+                    {
+                    loading ?  <ActivityIndicator size="large" color="#00ff00" /> :
                     <Button onPress={tryRegister} buttonStyle={{ alignSelf: 'center', position: 'absolute', top: -10 }} title="INGRESAR" type="medium" titleSize={25} titleColor={Colors.WHITE} color={Colors.PRIMARY} />
+                    }
                 </View>
             </View>
         </KeyboardAvoidingView>
