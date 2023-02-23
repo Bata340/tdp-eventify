@@ -97,9 +97,10 @@ class EventRepository:
             return []
         else:
             listOfFavs = list(json.loads(json_util.dumps(favEvents)))
+            listReturn = []
             for fav in listOfFavs:
-                fav["event_data"] = self.getEventWithId(fav["event_id"])
-            return listOfFavs
+                listReturn.append(self.getEventWithId(fav["event_id"]))
+            return listReturn
         
 
     def disconnectDB(self):
