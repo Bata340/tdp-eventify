@@ -133,20 +133,22 @@ class UserRepository:
 
         return a.data()
 
+    @staticmethod
+    def _process_user_nodes(user_nodes):
+        results_list = []
+        for record in user_nodes.values():
+            node = record[0]
+            results_list.append(
+                {
+                    "id": node.id,
+                    "name": node.get("name"),
+                    "email": node.get("email"),
+                    "profilePic": node.get("profile_pic")
+                }
+            )
+        return results_list
 
-def _process_user_nodes(user_nodes):
-    results_list = []
-    for record in user_nodes.values():
-        node = record[0]
-        results_list.append(
-            {
-                "id": node.id,
-                "name": node.get("name"),
-                "email": node.get("email"),
-                "profilePic": node.get("profile_pic")
-            }
-        )
-
+    @staticmethod
     def _update_money_account_for_user(tx, email, money):
         print("entre")
         try:
@@ -166,4 +168,4 @@ def _process_user_nodes(user_nodes):
         else:
             return singleRes.value()
 
-    return results_list
+    
