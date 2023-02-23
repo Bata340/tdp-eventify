@@ -101,7 +101,7 @@ class UserRepository:
             name=name.title(),
             email=email.lower()
         )
-        return _process_user_nodes(user_nodes)
+        return UserRepository._process_user_nodes(user_nodes)
 
     @staticmethod
     def _send_request(tx, fromUserId, toUserId):
@@ -119,7 +119,7 @@ class UserRepository:
         user_nodes = tx.run("MATCH (user:User)-[r:REQUEST]->(u:User)"
                             " WHERE ID(u) = $userId"
                             " RETURN user", userId=int(userId))
-        return _process_user_nodes(user_nodes)
+        return UserRepository._process_user_nodes(user_nodes)
 
     @staticmethod
     def _acceptFriendRequests(tx, userId, friendId):

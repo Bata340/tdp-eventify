@@ -55,3 +55,7 @@ class Transaction(BaseModel):
     date: datetime
     typeOfCard: str
     paymentAmount: int
+
+class FavouriteEvent(BaseModel):
+    event_id: str
+    user_email: str

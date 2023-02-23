@@ -215,3 +215,25 @@ async def accept_friend_request(userId: str, friendId: str):
     if len(res) == 0:
         raise HTTPException(status_code=400, detail="Request inexistente")
     return {"message": "Friend Added"}
+
+
+@router.post("/events/favourites/toggle")
+async def toggle_favourite_event(user_email: str, event_id: str):
+    try:
+        res = eventRepository.toggleFavourite({"user_email": user_email, "event_id": event_id})
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=e
+        )
+    return {"message": res}
+
+
+@router.get("/events/favourites")
+async def get_favourites(user_email: str):
+    try:
+        res = eventRepository.getFavouriteEvents(user_email)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=e
+        )
+    return res

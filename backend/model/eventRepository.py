@@ -16,6 +16,7 @@ class EventRepository:
         self.database = self.mongo["events"]
         self.reserveEvents = self.mongo["reservedEvents"]
         self.transactions = self.mongo["transactions"]
+        self.favouriteEvents = self.mongo["favouriteEventes"]
         
 
     def getEventWithId(self, id: str):
@@ -72,9 +73,7 @@ class EventRepository:
 
     def getTransactionsFromUser(self, userId: str):
         filter = {'userId': userId}
-        print(filter)
         returnedTransactions = self.transactions["transactions"].find(filter=filter)
-        print(returnedTransactions)
         txs = list(json.loads(json_util.dumps(returnedTransactions)))
         return txs
 
@@ -82,6 +81,26 @@ class EventRepository:
         transaction = self.transactions["transactions"].insert_one(tx)
         newTransaction = self.transactions["transactions"].find_one({"_id": transaction.inserted_id})
         return json.loads(json_util.dumps(newTransaction))
+
+    def toggleFavourite(self, fields: dict):
+        favouriteDocs = self.favouriteEvents["favouriteEvents"].find_one(fields)
+        if favouriteDocs is not None:
+            self.favouriteEvents["favouriteEvents"].delete_one({"_id": favouriteDocs["_id"]})
+            return "El evento ha sido quitado de favoritos."
+        else:
+            self.favouriteEvents["favouriteEvents"].insert_one(fields)
+            return "El evento ha sido añadido a favoritos."
+
+    def getFavouriteEvents(self, user_email: str):
+        favEvents = self.favouriteEvents["favouriteEvents"].find(filter={"user_email": user_email})
+        if favEvents is None:
+            return []
+        else:
+            listOfFavs = list(json.loads(json_util.dumps(favEvents)))
+            for fav in listOfFavs:
+                fav["event_data"] = self.getEventWithId(fav["event_id"])
+            return listOfFavs
+        
 
     def disconnectDB(self):
         self.mongo.close()
