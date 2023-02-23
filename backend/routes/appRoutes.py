@@ -78,8 +78,8 @@ async def getUser(email: str = None, name: str = None):
 
 
 @router.get("/events", status_code=status.HTTP_200_OK)
-async def getEvents(owner: Optional[str] = None):
-    return eventRepository.getEvents(owner)
+async def getEvents(owner: Optional[str] = None, email_request: Optional[str] = None):
+    return eventRepository.getEvents(owner, email_request)
 
 
 @router.post("/event")

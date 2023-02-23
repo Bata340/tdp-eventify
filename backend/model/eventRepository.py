@@ -25,12 +25,19 @@ class EventRepository:
             raise exceptions.EventNotFound
         return json.loads(json_util.dumps(event))
         
-    def getEvents(self, owner: Union[str, None] = None):
+    def getEvents(self, owner: Union[str, None] = None, email_request: Union[str, None] = None):
         filter = {}
         if owner is not None:
             filter['owner'] = owner
         returned_events = self.database["events"].find(filter=filter)
         events = list(json.loads(json_util.dumps(returned_events)))
+        if email_request is not None:
+            for event in events:
+                favEvent = self.favouriteEvents["favouriteEvents"].find_one({"user_email": email_request, "event_id": event["_id"]["$oid"]})
+                if favEvent is not None:
+                    event["is_favourite"] = True
+                else:
+                    event["is_favourite"] = False
         return events
         
     def createEvent(self, event: dict):
@@ -99,7 +106,9 @@ class EventRepository:
             listOfFavs = list(json.loads(json_util.dumps(favEvents)))
             listReturn = []
             for fav in listOfFavs:
-                listReturn.append(self.getEventWithId(fav["event_id"]))
+                event = self.getEventWithId(fav["event_id"])
+                event["is_favourite"] = True
+                listReturn.append(event)
             return listReturn
         
 
