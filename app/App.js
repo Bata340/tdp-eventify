@@ -24,6 +24,7 @@ import RegisterScreen from './screens/RegisterScreen';
 import ShowPeople from './screens/ShowPeople';
 import MyTickets from './components/MyTickets';
 import MyEvents from './components/MyEvents';
+import MyEventsAndTickets from './screens/MyEventsAndTickets';
 
 function LoginStack() {
   const LoginStack = createNativeStackNavigator();
@@ -46,8 +47,7 @@ function EventsStack() {
       <EventsStack.Screen name="EventPayment" component={EventPaymentForm} options={{ headerShown: false }} />
       <EventsStack.Screen name="EventEdit" component={EditEventScreen} options={{ headerShown: false}}/>
       <EventsStack.Screen name="EventQR" component={EventQR} options={{ headerShown: false}}/>
-      <EventsStack.Screen name="MyTickets" component={MyTickets} options={{ headerShown: false}}/>
-      <EventsStack.Screen name="MyEvents" component={MyEvents} options={{ headerShown: false}}/>
+      <EventsStack.Screen name="MyTicketsAndEvents" component={MyEventsAndTickets} options={{ headerShown: false}}/>
       <EventsStack.Screen name="ShowPeople" component={ShowPeople} options={{ headerShown: false}}/>
     </EventsStack.Navigator>
   )

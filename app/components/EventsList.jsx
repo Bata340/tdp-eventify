@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { ScrollView, View, ActivityIndicator, RefreshControl } from 'react-native';
-import Button from './Button';
-import Colors from '../constants/Colors';
 import AppConstants from '../constants/AppConstants';
 import EventCard from './EventCard';
 import { getFirebaseImage } from '../utils/FirebaseHandler';

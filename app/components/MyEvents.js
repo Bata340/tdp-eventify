@@ -10,7 +10,6 @@ export default function MyEvents() {
 
     return (
         <View style={{ backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, paddingBottom: 100, minHeight:Dimensions.get("window").height }}>
-            <HeaderUser navigation={navigation}/>
             <MyEventsList/>
         </View>
     );

@@ -1,28 +1,24 @@
-import { useEffect, useState } from 'react';
-import { ScrollView, Text, View, ActivityIndicator, RefreshControl, Dimensions } from 'react-native';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { View, Dimensions } from 'react-native';
 import Colors from '../constants/Colors';
 import Button from '../components/Button';
-import UserAvatar from '../components/UserAvatar';
-import EventCard from '../components/EventCard';
-
-import { useGlobalAuthContext } from '../utils/ContextFactory';
-import AppConstants from '../constants/AppConstants';
-import { getFirebaseImage } from '../utils/FirebaseHandler';
+import { useNavigation } from '@react-navigation/native';
 import { EventsList } from '../components/EventsList';
 import { HeaderUser } from '../components/HeaderUser';
 
 
-export default function EventsScreen({ route, navigaton }) {
-    const appAuthContext = useGlobalAuthContext();
+export default function EventsScreen() {
 
-
+    const navigation = useNavigation();
     return (
         <View style={{ backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, paddingBottom: 100, minHeight:Dimensions.get("window").height }}>
-            
-            <HeaderUser navigation={navigaton}/>
-
+            <HeaderUser navigation={navigation}/>
+            <Button
+                title="PRUEBA"
+                titleColor={Colors.WHITE}
+                color={"#ff0000"}
+                buttonStyle={{ verticalPadding: 30 }}
+                onPress = {() => {navigation.navigate("MyTicketsAndEvents");}}
+            />
             <EventsList/>
         </View>
     )
