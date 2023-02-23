@@ -27,7 +27,8 @@ def thereIsAvailabilityLeft(event, dateRes):
 def convertDatetime(datimes):
     datetime_aux = []
     for date in datimes:
-        datetime_aux.append(date.__format__("%Y-%m-%dT%H:%M:%SZ"))
+        #datetime_aux.append(date.__format__("%Y-%m-%dT%H:%M:%S %Z"))
+        datetime_aux.append(date.isoformat())
     return datetime_aux
 
 
