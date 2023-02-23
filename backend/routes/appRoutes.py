@@ -125,8 +125,8 @@ async def reserveEvent(id: str, reservation: schema.Reservation):
     try:
         event = eventRepository.getEventWithId(id)
 
-        reservation.dateReserved = reservation.dateReserved.__format__(
-            "%Y-%m-%dT%H:%M:%SZ")
+        reservation.dateReserved = reservation.dateReserved.isoformat()#.__format__(
+            #"%Y-%m-%dT%H:%M:%SZ")
         if (len(event['eventDates']) > 0) and (reservation.dateReserved not in event['eventDates']):
             raise HTTPException(status_code=404, detail="Event with id " +
                                 id + " has no date " + reservation.dateReserved)
