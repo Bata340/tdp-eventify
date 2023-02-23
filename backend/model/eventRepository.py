@@ -33,11 +33,14 @@ class EventRepository:
         events = list(json.loads(json_util.dumps(returned_events)))
         if email_request is not None:
             for event in events:
-                favEvent = self.favouriteEvents["favouriteEvents"].find_one({"user_email": email_request, "event_id": event["_id"]["$oid"]})
-                if favEvent is not None:
-                    event["is_favourite"] = True
+                if event["owner"] == email_request:
+                    events.remove(event)
                 else:
-                    event["is_favourite"] = False
+                    favEvent = self.favouriteEvents["favouriteEvents"].find_one({"user_email": email_request, "event_id": event["_id"]["$oid"]})
+                    if favEvent is not None:
+                        event["is_favourite"] = True
+                    else:
+                        event["is_favourite"] = False
         return events
         
     def createEvent(self, event: dict):
