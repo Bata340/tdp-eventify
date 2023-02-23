@@ -8,6 +8,7 @@ import Feather from '@expo/vector-icons/Feather';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useGlobalAuthActionsContext, useGlobalAuthContext } from '../utils/ContextFactory';
 import AppConstants from '../constants/AppConstants';
+import { postDataToURL } from '../utils/FetchAPI';
 
 export default function EventCard({
     event = {},
@@ -20,26 +21,18 @@ export default function EventCard({
     const navigation = useNavigation();
 
     useEffect(() => {
-        setIsFaved(appAuthContext.favorites.some(e => e.id == event.id));
-    }, [appAuthContext]);
+        setIsFaved(event.isFav);
+    }, [event]);
 
     const onFavoritePress = () => {
-        setIsFaved(prevFavedState => {
-            if (prevFavedState) {
-                setAppAuthContext(prevState => ({
-                    ...prevState,
-                    favorites: prevState.favorites.filter(e => e.id != event.id) 
-                }));
+        postDataToURL(
+            `${AppConstants.API_URL}/events/favourites/toggle`,
+            {
+                "user_email": userEmail,
+                "event_id": event._id
             }
-            else {
-                setAppAuthContext(prevState => ({
-                    ...prevState,
-                    favorites: prevState.favorites.concat(event)
-                }));
-            }
-
-            return !prevFavedState;
-        });
+        );
+        setIsFaved(!isFaved);
     }
 
     const onCardPress = () => {

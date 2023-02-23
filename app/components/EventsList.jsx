@@ -4,6 +4,7 @@ import AppConstants from '../constants/AppConstants';
 import EventCard from './EventCard';
 import { getFirebaseImage } from '../utils/FirebaseHandler';
 import { useNavigation } from '@react-navigation/native';
+import { useGlobalAuthContext } from '../utils/ContextFactory';
 
 const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
@@ -13,6 +14,8 @@ export const EventsList = (id_persona = '') => {
     const [events, setEvents] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     const navigation = useNavigation();
+    const appAuthContext = useGlobalAuthContext();
+    const userEmail = appAuthContext.userSession.getUserEmail();
 
 
     async function getEvents(){
@@ -22,7 +25,7 @@ export const EventsList = (id_persona = '') => {
                 'Content-Type': 'application/json',
             }
         };
-        const url = `${AppConstants.API_URL}/events`;
+        const url = `${AppConstants.API_URL}/events?email_request=${userEmail}`;
         const response = await fetch(
             url,
             paramsGet
@@ -52,7 +55,8 @@ export const EventsList = (id_persona = '') => {
                         description: jsonResponse[i].description,
                         price: jsonResponse[i].price,
                         owner: jsonResponse[i].owner,
-                        image: imageURI
+                        image: imageURI,
+                        isFav: jsonResponse[i].is_favourite,
                     });
                 }
                 setEvents(arrayEvents);
