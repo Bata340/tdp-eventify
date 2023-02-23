@@ -12,13 +12,6 @@ export default function EventsScreen() {
     return (
         <View style={{ backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, paddingBottom: 100, minHeight:Dimensions.get("window").height }}>
             <HeaderUser navigation={navigation}/>
-            <Button
-                title="PRUEBA"
-                titleColor={Colors.WHITE}
-                color={"#ff0000"}
-                buttonStyle={{ verticalPadding: 30 }}
-                onPress = {() => {navigation.navigate("MyTicketsAndEvents");}}
-            />
             <EventsList/>
         </View>
     )
