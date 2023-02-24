@@ -5,12 +5,15 @@ import AppConstants from '../constants/AppConstants';
 import ScreenTitle from "./ScreenTitle";
 import Colors from "../constants/Colors";
 import ScreenSubtitle from "./ScreenSubtitle";
+import { useGlobalAuthContext } from "../utils/ContextFactory";
 
 const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
 export const PaymentList = (user) => {
     const [payments, setPayments] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
+    const appAuthContext = useGlobalAuthContext();
+    const userEmail = appAuthContext.userSession.getUserEmail();
 
     async function getPayments(){
         const paramsGet = {
@@ -19,7 +22,7 @@ export const PaymentList = (user) => {
                 'Content-Type': 'application/json',
             }
         };
-        const url = `${AppConstants.API_URL}/events`;
+        const url = `${AppConstants.API_URL}/transactions/${userEmail}`;
         const response = await fetch(
             url,
             paramsGet
@@ -28,16 +31,18 @@ export const PaymentList = (user) => {
         if (response.status === 200){
             if(!jsonResponse.status_code){
                 const arrayPayments = [];
-                for(let i=0; i<4; i++){
-                    const date = new Date(jsonResponse[i].eventDates[0]);
+                for(let i=0; i<jsonResponse.length; i++){
+                    const date = new Date(jsonResponse[i].date[0]);
                     
                     arrayPayments.push({
                         _id: jsonResponse[i]._id.$oid,
-                        id: jsonResponse[i].key,
-                        name: jsonResponse[i].name,
+                        event_id: jsonResponse[i].event_id,
+                        userId: jsonResponse[i].userId,
                         date: `${date.getDate().toString().padStart(2, '0')} ${monthNames[date.getMonth()]}, ${date.getFullYear()}`,
                         time: `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`,
-                        value: jsonResponse[i].price,
+                        typeOfCard: jsonResponse[i].typeOfCard,
+                        paymentAmount: jsonResponse[i].paymentAmount,
+                        numberCard: jsonResponse[i].numberCard,
                         
                     });
                 }
@@ -69,10 +74,11 @@ export const PaymentList = (user) => {
                     {
                     
                     payments.length > 0 ?
-                    payments.map(e => <PaymentCard key={'payment-card-' + e.id+'-'+e._id} payment={e} />)
+                    payments.map(e => <PaymentCard key={'payment-card-' + '-'+e._id} payment={e} />)
                     :
                     <View style={{alignItems: 'center', borderWidth:5, borderRadius:10, borderColor: Colors.PRIMARY_VERY_DARK_GRAYED, padding:10}}>
-                        <Text style={{fontSize: 20, color:"white", marginTop: 10}}>Aún no posees pagos...</Text>
+                        
+                        <Text style={{fontSize: 20, color:"white", marginTop: 10}}>Aún no posees pagos... </Text>
                     </View>
                     }
                     <View style={{ height: 230 }}></View>

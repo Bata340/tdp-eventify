@@ -7,17 +7,17 @@ import Colors from "../constants/Colors";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import  ScreenSubtitle  from "./ScreenSubtitle";
 
-export const SaldoCard = () => {
-    const [saldo, setSaldo] = useState([]);
+export const SaldoCard = ({userId}) => {
+    const [saldo, setSaldo] = useState('');
     const [refreshing, setRefreshing] = useState(false);
-    async function getSaldo(){
+    async function getSaldo(userId){
         const paramsGet = {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
             }
         };
-        const url = `${AppConstants.API_URL}/events`;
+        const url = `${AppConstants.API_URL}/users?email=${userId}`;
         const response = await fetch(
             url,
             paramsGet
@@ -25,7 +25,8 @@ export const SaldoCard = () => {
         const jsonResponse = await response.json();
         if (response.status === 200){
             
-                setSaldo(100);
+                setSaldo(JSON.stringify(jsonResponse));
+                setSaldo(jsonResponse[0].money);
             
         }else{
             setSaldo(-1);
@@ -34,7 +35,7 @@ export const SaldoCard = () => {
   
   
     useEffect( () => {
-        getSaldo();
+        getSaldo(userId);
   
     }, []);
 
@@ -44,7 +45,7 @@ export const SaldoCard = () => {
         <View style={{  width:'60%', backgroundColor: Colors.PRIMARY_DARK_GRAYED  ,margin:20, borderRadius:10 , alignItems:'center'}}>
             <Text style={{padding:10}}>
             <Ionicons name="wallet"  color={Colors.PRIMARY} size={25}></Ionicons>
-            <Text style={{fontSize:25 ,fontWeight:'bold', color:Colors.WHITE}}>${saldo}</Text>
+            <Text style={{fontSize:25 ,fontWeight:'bold', color:Colors.WHITE}}>&nbsp;${saldo}</Text>
             </Text>
         
         </View>
