@@ -48,6 +48,7 @@ class Reservation(BaseModel):
     userid: str
     dateReserved: datetime
     typeOfCard: str
+    numberCard: Optional[str]
 
 class Transaction(BaseModel):
     event_id: str
@@ -55,6 +56,7 @@ class Transaction(BaseModel):
     date: datetime
     typeOfCard: str
     paymentAmount: int
+    numberCard: Optional[str]
 
 class FavouriteEvent(BaseModel):
     event_id: str

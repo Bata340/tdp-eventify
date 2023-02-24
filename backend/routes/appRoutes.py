@@ -150,7 +150,8 @@ async def reserveEvent(id: str, reservation: schema.Reservation):
             userId=event['owner'],
             date=transactionDate,
             typeOfCard=reservation.typeOfCard,
-            paymentAmount=event['price']
+            paymentAmount=event['price'],
+            
         )
         eventRepository.createTransaction(
             jsonable_encoder(receiverTransaction))
@@ -161,7 +162,8 @@ async def reserveEvent(id: str, reservation: schema.Reservation):
             userId=reservation.userid,
             date=transactionDate,
             typeOfCard=reservation.typeOfCard,
-            paymentAmount=-event['price']
+            paymentAmount=-event['price'],
+            numberCard=reservation.numberCard
         )
         eventRepository.createTransaction(jsonable_encoder(payerTransaction))
 

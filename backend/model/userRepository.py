@@ -143,7 +143,8 @@ class UserRepository:
                     "id": node.id,
                     "name": node.get("name"),
                     "email": node.get("email"),
-                    "profilePic": node.get("profile_pic")
+                    "profilePic": node.get("profile_pic"),
+                    "money": node.get("money")
                 }
             )
         return results_list
