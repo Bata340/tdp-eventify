@@ -39,6 +39,10 @@ export default class Session {
         return this.user?.money;
     }
 
+    getUserBirthDate = () => {
+        return this.user?.birth_date;
+    }
+
     clean() {
         this.user = undefined;
     }
