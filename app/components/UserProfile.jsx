@@ -1,26 +1,29 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
-import { useEffect, useState } from "react";
-import AppConstants from '../constants/AppConstants';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import UserAvatar from '../components/UserAvatar';
 import { useGlobalAuthContext } from '../utils/ContextFactory';
+import MyEventsAndTickets from '../screens/MyEventsAndTickets';
 
 const UserProfile = () => {
   const appAuthContext = useGlobalAuthContext();
   return (
-    <View style={styles.container}>
-    <UserAvatar size={200} uri={appAuthContext.userSession.getUserAvatar()} />
-    <Text style={styles.name}>{appAuthContext.userSession.getUserFullName()}</Text>
-    <Text style={styles.email}>{appAuthContext.userSession.getUserEmail()}</Text>
-    <Text style={styles.birth_date}>{appAuthContext.userSession.getUserBirthDate()}</Text>
-    </View>
+    <ScrollView>
+      <View style={styles.container}>
+      <UserAvatar size={200} uri={appAuthContext.userSession.getUserAvatar()} />
+      <Text style={styles.name}>{appAuthContext.userSession.getUserFullName()}</Text>
+      <Text style={styles.email}>{appAuthContext.userSession.getUserEmail()}</Text>
+      <Text style={styles.birth_date}>{appAuthContext.userSession.getUserBirthDate()}</Text>
+      </View>
+      <MyEventsAndTickets />
+    </ScrollView>
+    
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    padding: 20,
+    padding: 10
   },
   avatar: {
     width: 100,
@@ -29,12 +32,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   name: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: 'bold',
     marginBottom: 5,
   },
   email: {
-    fontSize: 16,
+    fontSize: 25,
     color: 'gray',
     marginBottom: 5,
   },

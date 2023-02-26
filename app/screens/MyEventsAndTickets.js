@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   });
 
 
-export default function MyEventsAndTickets() {
+const MyEventsAndTickets = () => {
 
     const MyTicketsTab = () => (
         <MyTickets/>
@@ -63,4 +63,6 @@ export default function MyEventsAndTickets() {
             
         />
     );
-}
+};
+
+export default MyEventsAndTickets;
