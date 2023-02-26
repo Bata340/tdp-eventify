@@ -76,6 +76,10 @@ async def getUser(email: str = None, name: str = None):
         return HTTPException(status_code=404, detail="El usuario no se encuentra en la base de datos.")
     return usersFound
 
+@router.get("/usersWithFriendship", status_code=status.HTTP_200_OK)
+async def getUsersWithFriendship(userId: int ):
+    usersFound = userRepository.getUsersWithFriendshipAndFilters(userId)
+    return usersFound
 
 @router.get("/events", status_code=status.HTTP_200_OK)
 async def getEvents(owner: Optional[str] = None, email_request: Optional[str] = None):
@@ -239,3 +243,5 @@ async def get_favourites(user_email: str):
             status_code=500, detail=e
         )
     return res
+
+
