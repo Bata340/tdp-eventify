@@ -25,6 +25,11 @@ class UserRepository:
             self._execute_get_users_with_filters, email, name)
         return users
 
+    def getUsersWithFriendshipAndFilters(self, email: str):
+        users = self.usersDB.execute_read(
+            self._execute_get_users_with_friendship, email)
+        return users
+
     def sendRequest(self, fromUserId: str, toUserId: str):
         self.usersDB.execute_write(
             self._send_request, int(fromUserId), int(toUserId))
@@ -104,6 +109,23 @@ class UserRepository:
         return UserRepository._process_user_nodes(user_nodes)
 
     @staticmethod
+    def _execute_get_users_with_friendship(tx, userId):
+        if userId is None:
+            userId = ""
+        user_nodes = tx.run(
+            "MATCH  (a:User)"
+            "WHERE ID(a) <> $userId "
+            "OPTIONAL MATCH (b:User)-[r:REQUEST]->(a) WHERE ID(b) = $userId "
+            "OPTIONAL MATCH (a)-[f:FRIEND]-(c:User) WHERE ID(c) = $userId "
+            "RETURN DISTINCT a,b,c ",
+            # "MATCH (a)-[f:FRIEND]-(b) "
+            # "RETURN f",
+            userId=userId
+        )
+        #return UserRepository._process_user_nodes(user_nodes)
+        return UserRepository._process_friend_nodes(user_nodes)
+        
+    @staticmethod
     def _send_request(tx, fromUserId, toUserId):
         tx.run("MATCH (a:User), (b:User)"
                " WHERE ID(a) = $fromUserId AND ID(b) = $toUserId"
@@ -123,7 +145,7 @@ class UserRepository:
 
     @staticmethod
     def _acceptFriendRequests(tx, userId, friendId):
-        a = tx.run("MATCH (node_1)<-[r:REQUEST]-(node_2)"
+        a = tx.run("MATCH (node_1:User)<-[r:REQUEST]-(node_2:User)"
                    " WHERE ID(node_1) = $node1_id AND ID(node_2) = $node2_id"
                    " DELETE r"
                    " WITH node_1, node_2"
@@ -145,6 +167,25 @@ class UserRepository:
                     "email": node.get("email"),
                     "profilePic": node.get("profile_pic"),
                     "money": node.get("money")
+                }
+            )
+        return results_list
+    
+    @staticmethod
+    def _process_friend_nodes(user_nodes):
+        results_list = []
+        for record in user_nodes.values():
+            node = record[0]
+            request = record[1]
+            friend = record[2]
+            results_list.append(
+                {
+                    "id": node.id,
+                    "name": node.get("name"),
+                    "email": node.get("email"),
+                    "profilePic": node.get("profile_pic"),
+                    "request": request is not None,
+                    'friends': friend is not None,
                 }
             )
         return results_list
