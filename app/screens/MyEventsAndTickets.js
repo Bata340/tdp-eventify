@@ -11,8 +11,8 @@ const styles = StyleSheet.create({
       flex: 1,
     },
     container: {
-        paddingTop: StatusBar.currentHeight,
-        backgroundColor: Colors.PRIMARY_DARK
+        paddingTop: StatusBar.currentHeight/2,
+        backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED
     },
     indicator: {
         backgroundColor: Colors.PRIMARY_DARKER
@@ -20,9 +20,10 @@ const styles = StyleSheet.create({
   });
 
 
-const MyEventsAndTickets = () => {
+export const MyEventsAndTickets = () => {
 
     const MyTicketsTab = () => (
+
         <MyTickets/>
     );
       
@@ -60,9 +61,6 @@ const MyEventsAndTickets = () => {
             initialLayout={{ width: layout.width }}
             style={styles.container}
             renderTabBar = {renderTabBar}
-            
         />
     );
 };
-
-export default MyEventsAndTickets;

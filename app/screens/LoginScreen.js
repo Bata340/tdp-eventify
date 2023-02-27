@@ -66,7 +66,8 @@ export default function LoginScreen({ route, navigation }) {
             name: user.name,
             email: user.email,
             profilePic: profilePic,
-            money: user.money
+            money: user.money,
+            birth_date: user.birth_date
         })
         .then(sessionInitialized => {
             if (sessionInitialized) {

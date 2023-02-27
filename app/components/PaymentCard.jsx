@@ -70,7 +70,7 @@ export const PaymentCard = ({payment} ) => {
             <Text style={{ fontWeight: 'bold', color: Colors.WHITE, fontSize:20,verticalAlign:'top', textAlign:'left'}}><Ionicons name={debito?"arrow-back-outline":'arrow-forward-outline'} color={debito?'#FC6D6D':Colors.WHITE} size={20} />&nbsp;{event}</Text>
                 
             
-            <Text style={[{ fontWeight: 'bold', fontSize:20,textAlign:'right', borderRadius:'10',color:Colors.WHITE}]}>{debito ?   `- $${Math.abs(payment.paymentAmount)}`:`$${payment.paymentAmount}` }</Text>
+            <Text style={[{ fontWeight: 'bold', fontSize:20,textAlign:'right', borderRadius:10,color:Colors.WHITE}]}>{debito ?   `- $${Math.abs(payment.paymentAmount)}`:`$${payment.paymentAmount}` }</Text>
             </View>
             
             {toggle ? 

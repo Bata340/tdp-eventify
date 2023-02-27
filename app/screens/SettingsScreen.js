@@ -21,9 +21,15 @@ export default function SettingsScreen({ route, navigaton }) {
 
     return (
         <View style={{ width: '100%', paddingTop: 50, height: '100%', backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, alignContent: 'center' }}>
-            <ScreenTitle title="Configuración" />
+            <Button 
+                title="Cerrar sesión" 
+                type="small" 
+                titleSize={18} 
+                titleStyle={{color:"white"}} 
+                buttonStyle={{marginVertical:"4%", paddingVertical:"2%", backgroundColor:"red"}} 
+                onPress={closeSession} 
+            />
             <UserProfile />
-            <Button title="Cerrar sesión" type="large" titleSize={18} onPress={closeSession} />
         </View>
     )
 }
