@@ -112,7 +112,7 @@ function AuthenticatedBottomTab() {
         name="Settings"
         component={SettingsScreen}
         options={{
-					tabBarIcon: ({ focused, color, size }) => <Ionicons name={focused ? "settings" : "settings-outline"} color={color} size={size} />,
+					tabBarIcon: ({ focused, color, size }) => <Ionicons name={focused ? "person" : "person-outline"} color={color} size={size} />,
           headerShown: false
 				}}
       />
