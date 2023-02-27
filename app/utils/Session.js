@@ -40,7 +40,6 @@ export default class Session {
     }
 
     getUserBirthDate = () => {
-        console.log(this.user);
         return this.user?.birth_date;
     }
 
