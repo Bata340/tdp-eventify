@@ -166,6 +166,7 @@ class UserRepository:
                     "name": node.get("name"),
                     "email": node.get("email"),
                     "profilePic": node.get("profile_pic"),
+                    "birth_date": str(node.get("birth_date")),
                     "money": node.get("money")
                 }
             )

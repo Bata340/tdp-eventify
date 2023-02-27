@@ -64,6 +64,7 @@ async def login(user: schema.UserLogin):
             "email": repoReturn.get("email"),
             "profilePic": repoReturn.get("profile_pic"),
             "money": repoReturn.get("money"),
+            "birth_date": str(repoReturn.get("birth_date")),
             "id": repoReturn.id
         }
     }
