@@ -245,8 +245,3 @@ async def get_favourites(user_email: str):
         )
     return res
 
-
-@router.get("/user/{userId}/friends")
-async def get_user_friends(userId: str):
-    return {"message": []}
-
