@@ -264,3 +264,8 @@ async def get_friends_that_attend_to_event(eventId: str, userEmail: str):
         raise HTTPException(
             status_code=500, detail=e
         )
+
+
+@router.get("/user/{userId}/friends")
+async def get_user_friends(userId: str):
+    return {"message": []}
