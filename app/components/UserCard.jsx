@@ -3,6 +3,7 @@ import {  Text, View, ActivityIndicator, TouchableHighlight } from 'react-native
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Colors from '../constants/Colors';
 import UserAvatar from './UserAvatar';
+import { getFirebaseImage } from '../utils/FirebaseHandler';
 
 export const UserCard = ({persona}) => {
     const [toggle, setToggle] = useState(false);
@@ -12,18 +13,19 @@ export const UserCard = ({persona}) => {
     const [aux, setAux] = useState('')
     const [image, setImage] = useState(null)
 
-      async function getImage(){
-        let imageURI;
-        try{
-          imageURI = await getFirebaseImage('files/'+persona.profilePic);
-        }catch(exception){
-          //Image not available
-          setAux(JSON.stringify(exception) )
-          imageURI = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/640px-Image_not_available.png";
-        }
-        setImage(imageURI);
-        
+    async function getImage(){
+      let imageURI;
+      try{
+        imageURI = await getFirebaseImage('files/'+persona.profilePic);
+      }catch(exception){
+        //Image not available
+        setAux(JSON.stringify(exception) )
+        imageURI = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/640px-Image_not_available.png";
       }
+      setImage(imageURI);
+      
+    }
+    
     useEffect(() => {
       getImage();
     }, [])
