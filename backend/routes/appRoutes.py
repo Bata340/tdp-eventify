@@ -77,10 +77,12 @@ async def getUser(email: str = None, name: str = None):
         return HTTPException(status_code=404, detail="El usuario no se encuentra en la base de datos.")
     return usersFound
 
+
 @router.get("/usersWithFriendship", status_code=status.HTTP_200_OK)
-async def getUsersWithFriendship(userId: int ):
+async def getUsersWithFriendship(userId: int):
     usersFound = userRepository.getUsersWithFriendshipAndFilters(userId)
     return usersFound
+
 
 @router.get("/events", status_code=status.HTTP_200_OK)
 async def getEvents(owner: Optional[str] = None, email_request: Optional[str] = None):
@@ -130,8 +132,8 @@ async def reserveEvent(id: str, reservation: schema.Reservation):
     try:
         event = eventRepository.getEventWithId(id)
 
-        reservation.dateReserved = reservation.dateReserved.isoformat()#.__format__(
-            #"%Y-%m-%dT%H:%M:%SZ")
+        reservation.dateReserved = reservation.dateReserved.isoformat()  # .__format__(
+        # "%Y-%m-%dT%H:%M:%SZ")
         if (len(event['eventDates']) > 0) and (reservation.dateReserved not in event['eventDates']):
             raise HTTPException(status_code=404, detail="Event with id " +
                                 id + " has no date " + reservation.dateReserved)
@@ -156,7 +158,7 @@ async def reserveEvent(id: str, reservation: schema.Reservation):
             date=transactionDate,
             typeOfCard=reservation.typeOfCard,
             paymentAmount=event['price'],
-            
+
         )
         eventRepository.createTransaction(
             jsonable_encoder(receiverTransaction))
@@ -227,7 +229,8 @@ async def accept_friend_request(userId: str, friendId: str):
 @router.post("/events/favourites/toggle")
 async def toggle_favourite_event(user_email: str, event_id: str):
     try:
-        res = eventRepository.toggleFavourite({"user_email": user_email, "event_id": event_id})
+        res = eventRepository.toggleFavourite(
+            {"user_email": user_email, "event_id": event_id})
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=e
@@ -246,3 +249,18 @@ async def get_favourites(user_email: str):
     return res
 
 
+@router.get("/event/{eventId}/atendees", status_code=status.HTTP_200_OK)
+async def get_friends_that_attend_to_event(eventId: str, userEmail: str):
+    try:
+        event_atendees = eventRepository.getEventAtendees(eventId)
+        friends = userRepository.getUserFriendsbyEmail(userEmail)
+        friends_to_event = []
+        for friend in friends:
+            if friend['email'] in event_atendees:
+                friends_to_event.append(friend)
+
+        return friends_to_event
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=e
+        )

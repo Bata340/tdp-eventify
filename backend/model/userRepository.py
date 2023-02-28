@@ -45,6 +45,11 @@ class UserRepository:
             self._update_money_account_for_user, email, money)
         return message
 
+    def getUserFriendsbyEmail(self, email: str):
+        message = self.usersDB.execute_read(
+            self._get_user_friends_by_email, email)
+        return message
+
     @staticmethod
     def _getUser(tx, email: str):
         try:
@@ -122,9 +127,9 @@ class UserRepository:
             # "RETURN f",
             userId=userId
         )
-        #return UserRepository._process_user_nodes(user_nodes)
+        # return UserRepository._process_user_nodes(user_nodes)
         return UserRepository._process_friend_nodes(user_nodes)
-        
+
     @staticmethod
     def _send_request(tx, fromUserId, toUserId):
         tx.run("MATCH (a:User), (b:User)"
@@ -171,7 +176,7 @@ class UserRepository:
                 }
             )
         return results_list
-    
+
     @staticmethod
     def _process_friend_nodes(user_nodes):
         results_list = []
@@ -211,4 +216,12 @@ class UserRepository:
         else:
             return singleRes.value()
 
-    
+    @staticmethod
+    def _get_user_friends_by_email(tx, email):
+        result = tx.run(
+            "MATCH (a)-[f:FRIEND]-(b:User) "
+            " WHERE b.email =$userEmail"
+            " RETURN a", userEmail=email.lower()
+        )
+
+        return UserRepository._process_user_nodes(result)
