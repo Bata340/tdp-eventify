@@ -39,12 +39,16 @@ export default function Register() {
         return Alert.alert('Las contraseñas ingresadas no coinciden');
     }
 
-    let nameImage;
+    let nameImage = "";
     if(!alreadyUploaded){
-        nameImage = profilePic.uri.split('/')[profilePic.uri.split('/').length - 1];
-        nameImage = await uploadImageToStorageWithURI(nameImage, profilePic.uri);
+        if (profilePic){
+            nameImage = profilePic.uri.split('/')[profilePic.uri.split('/').length - 1];
+            nameImage = await uploadImageToStorageWithURI(nameImage, profilePic.uri);
+        }
     }else{
-        nameImage = profilePic.name;
+        if (profilePic){
+            nameImage = profilePic.name;
+        }
     }
 
     const paramsPost = {

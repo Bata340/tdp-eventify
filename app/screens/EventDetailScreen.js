@@ -9,7 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StackActions } from '@react-navigation/native';
 import { useGlobalAuthContext } from '../utils/ContextFactory';
 import AppConstants from '../constants/AppConstants';
-import {UsersList} from '../components/UsersList'
+import UsersList from '../components/UsersList'
 import UserAvatar from '../components/UserAvatar';
 
 
@@ -122,7 +122,7 @@ export default function EventDetailScreen({ route, navigation }) {
     }
 
 
-    const showFriends = () => {
+    const ShowFriends = () => {
         let amount = usersFriends.size < MAX_SHOW_FRIENDS? usersFriends.size : MAX_SHOW_FRIENDS;
         const friendsProfilePics = []
         for (i; i < amount; i++){
@@ -130,7 +130,7 @@ export default function EventDetailScreen({ route, navigation }) {
             friendsProfilePics.push(usersFriends[i].profilePic);
         }
     }
-    useEffect(() => {
+    React.useEffect(() => {
         getUsers()
     }, [])
 
@@ -138,9 +138,10 @@ export default function EventDetailScreen({ route, navigation }) {
     return (
         
         <View style={{ flexDirection: 'column', width: '100%', paddingTop: 50, height: '100%', backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, alignContent: 'center' }}>
-            <div onPress={()=>UsersList(usersFriends)}>
-                <FlatList horizontal data={() => showFriends()} renderItem={({item}) => <UserAvatar uri={item.profilePic}/>}/>
-            </div>
+            <View onPress={()=>UsersList(usersFriends)}>
+                <Text>Amigos que asisten</Text>
+                <FlatList horizontal data={() => ShowFriends()} renderItem={({item}) => <UserAvatar uri={item.profilePic}/>}/>
+            </View>
             <View>
                 <TouchableHighlight
                     style={{ position: 'absolute', top: 20, left: 20, zIndex: 1, borderRadius: 30 }}
