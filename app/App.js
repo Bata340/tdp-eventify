@@ -86,9 +86,9 @@ function AuthenticatedBottomTab() {
       />
       <AuthTab.Screen
         name="Favorites"
-        component={FavoritesScreen}
+        component={ShowPeople}
         options={{
-					tabBarIcon: ({ focused, color, size }) => <AntDesign name={focused ? "heart" : "hearto"} color={color} size={size} />,
+					tabBarIcon: ({ focused, color, size }) => <Ionicons name="people" color={color} size={size} />,
           headerShown: false
 				}}
       />
