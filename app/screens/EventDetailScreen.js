@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Text, TouchableHighlight, View, ScrollView, Alert } from 'react-native';
+import { Image, Text, TouchableHighlight, View, ScrollView, Alert, FlatList } from 'react-native';
 import Colors from '../constants/Colors';
 import Feather from '@expo/vector-icons/Feather';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -9,6 +9,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StackActions } from '@react-navigation/native';
 import { useGlobalAuthContext } from '../utils/ContextFactory';
 import AppConstants from '../constants/AppConstants';
+import {UsersList} from '../components/UsersList'
+import UserAvatar from '../components/UserAvatar';
+
+
+const MAX_SHOW_FRIENDS = 2;
 
 export default function EventDetailScreen({ route, navigation }) {
 
@@ -16,6 +21,38 @@ export default function EventDetailScreen({ route, navigation }) {
     const isBuy = route.params?.isBuy;
     const appAuthContext = useGlobalAuthContext();
     const userEmail = appAuthContext.userSession.getUserEmail();
+    const [usersFriends, setUsersFriends] = React.useState([]);
+    
+    const getUsers = async () => {
+        const paramsGet = {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+
+        const url = `${AppConstants.API_URL}/event/${event._id}/atendees?userEmail=${userEmail}`;
+        const response = await fetch(url, paramsGet);
+        const jsonResponse = await response.json();
+
+        if (response.status === 200){
+            if(!jsonResponse.status_code){
+                const arrayUsers = [];
+                for(let i=0; i<jsonResponse.length; i++){
+                    arrayUsers.push({
+                        "id": jsonResponse[i].id,
+                        "name": jsonResponse[i].name,
+                        "email": jsonResponse[i].email,
+                        "profilePic": jsonResponse[i].profilePic,
+                        "request": jsonResponse[i].request,
+                        "friends": jsonResponse[i].friends
+                    });
+                }
+                //TODO: manejo de errores.
+                setUsersFriends(arrayUsers);
+            }
+        }   
+    }
 
 
     const handleDelete = async () => {
@@ -67,7 +104,6 @@ export default function EventDetailScreen({ route, navigation }) {
         }
     }
 
-
     const showDeleteAlert = () => {
         Alert.alert(
             `¿Está seguro que desea borrar el evento ${event.name}?`, 
@@ -86,8 +122,25 @@ export default function EventDetailScreen({ route, navigation }) {
     }
 
 
+    const showFriends = () => {
+        let amount = usersFriends.size < MAX_SHOW_FRIENDS? usersFriends.size : MAX_SHOW_FRIENDS;
+        const friendsProfilePics = []
+        for (i; i < amount; i++){
+
+            friendsProfilePics.push(usersFriends[i].profilePic);
+        }
+    }
+    useEffect(() => {
+        getUsers()
+    }, [])
+
+
     return (
+        
         <View style={{ flexDirection: 'column', width: '100%', paddingTop: 50, height: '100%', backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, alignContent: 'center' }}>
+            <div onPress={()=>UsersList(usersFriends)}>
+                <FlatList horizontal data={() => showFriends()} renderItem={({item}) => <UserAvatar uri={item.profilePic}/>}/>
+            </div>
             <View>
                 <TouchableHighlight
                     style={{ position: 'absolute', top: 20, left: 20, zIndex: 1, borderRadius: 30 }}
