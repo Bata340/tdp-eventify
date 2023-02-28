@@ -78,7 +78,7 @@ export const EventsList = (id_persona = '') => {
 
     return (
         <ScrollView
-            contentContainerStyle={{ alignItems: 'center', paddingTop: 30 }}
+            contentContainerStyle={{ alignItems: 'center', paddingTop: '2%' ,height:'100%'  }}
             refreshControl={
                 <RefreshControl refreshing={refreshing} 
                     onRefresh={onRefresh} />
