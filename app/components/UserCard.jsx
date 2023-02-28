@@ -4,9 +4,20 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import Colors from '../constants/Colors';
 import UserAvatar from './UserAvatar';
 import { getFirebaseImage } from '../utils/FirebaseHandler';
+import { useGlobalAuthContext } from '../utils/ContextFactory';
+import { async } from '@firebase/util';
+import AppConstants from '../constants/AppConstants';
 
 export const UserCard = ({persona}) => {
     const [toggle, setToggle] = useState(false);
+    const [request, setRequest] = useState(persona.request);
+    const [friends, setFriends] = useState(persona.friends);
+    const [toAccept, setToAccept] = useState(persona.toAccept);
+
+    const appAuthContext = useGlobalAuthContext();
+    const userId = appAuthContext.userSession.getUserId();
+   
+
     const onPressButton = ()=> {
         setToggle(!toggle);
       };
@@ -26,7 +37,51 @@ export const UserCard = ({persona}) => {
       
     }
     
+    async function sendRequest(){
+      const paramsPost = {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        }
+      };
+      const url = `${AppConstants.API_URL}/user/${userId}/request?toUserId=${persona.id}`;
+      const response = await fetch(
+          url,
+          paramsPost
+      );
+      const jsonResponse = await response.json();
+      if (response.status === 200){
+          setRequest(true);
+          
+      }else{
+         
+      }
+    }
+
+    async function acceptRequest(){
+      const paramsPost = {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        }
+      };
+      const url = `${AppConstants.API_URL}/user/${userId}/acceptRequest?friendId=${persona.id}`;
+      const response = await fetch(
+          url,
+          paramsPost
+      );
+      const jsonResponse = await response.json();
+      if (response.status === 200){
+          setFriends(true);
+          setToAccept(false);
+          
+      }else{
+         
+      }
+    }
+
     useEffect(() => {
+
       getImage();
     }, [])
     
@@ -39,21 +94,21 @@ export const UserCard = ({persona}) => {
             
             <View style={{ flexDirection: 'row' ,alignItems: 'flex-start' }}>
             <UserAvatar size={40} uri={image} />   
-            <Text style={{ fontWeight: 'bold', color: Colors.WHITE,height:40, fontSize:20, paddingTop:5, textAlign:'left'}}>{persona.name}</Text>
+            <Text style={{ fontWeight: 'bold', color: Colors.WHITE,height:40, fontSize:20, paddingTop:5, textAlign:'left'}}>&nbsp;{persona.name}</Text>
             </View>
 
             <View style={{ flexDirection: 'row' ,alignItems: 'flex-end' }}>
               {
-                persona.friends ? 
-                <TouchableHighlight underlayColor="00E88B" style={{alignItems:'center',backgroundColor:Colors.PRIMARY, borderRadius:20, padding:5, width:40, height:40}}  onPress={()=> { }}>
+                friends ? 
+                <TouchableHighlight underlayColor="00E88B" style={{alignItems:'center',backgroundColor:Colors.PRIMARY, borderRadius:20, padding:5, width:40, height:40}}  onPress={()=> {setFriends(false) }}>
                   <Ionicons size={25} color={Colors.WHITE} name='person-remove-outline'
                     />        
                 </TouchableHighlight>
                 :<></>
               }
               {
-                persona.request ? 
-                <TouchableHighlight underlayColor="00E88B" style={{alignItems:'center',backgroundColor:Colors.PRIMARY, borderRadius:20, padding:5, width:40, height:40}}  onPress={()=> { }}>
+                request && !friends ? 
+                <TouchableHighlight underlayColor="00E88B" style={{alignItems:'center',backgroundColor:Colors.PRIMARY, borderRadius:20, padding:5, paddingTop:7, width:40, height:40}}  onPress={()=> { }}>
                   <Ionicons size={25} color={Colors.WHITE} name='paper-plane-outline'
                     />        
                 </TouchableHighlight>
@@ -61,33 +116,25 @@ export const UserCard = ({persona}) => {
               }
 
               {
-                (!persona.friends && !persona.request) ? 
-                <TouchableHighlight underlayColor="00E88B" style={{alignItems:'center',backgroundColor:Colors.PRIMARY, borderRadius:20, padding:5, width:40, height:40}}  onPress={()=> { }}>
+                (!friends && !request && !toAccept ) ? 
+                <TouchableHighlight underlayColor="00E88B" style={{alignItems:'center',backgroundColor:Colors.PRIMARY, borderRadius:20, padding:5, width:40, height:40}}  onPress={()=> { sendRequest()}}>
                   <Ionicons size={25} color={Colors.WHITE} name='person-add-outline'
                     />        
                 </TouchableHighlight>
                 :<></>
               }
+              {
+                toAccept ?
+                <TouchableHighlight underlayColor="00E88B" style={{alignItems:'center',backgroundColor:Colors.PRIMARY, borderRadius:20, padding:5, width:40, height:40}}  onPress={()=> { acceptRequest()}}>
+                <Ionicons size={25} color={Colors.WHITE} name='checkmark-outline'
+                  />        
+              </TouchableHighlight>
+              :<></>
+              }
             </View>
               
 
             </View>
-            
-            {toggle ? 
-            <View style= {{padding:10 }}>
-                <Text style={{ fontWeight: 'normal', fontStyle:'italic', color: Colors.WHITE,  fontSize:18}}>Buenos Aires</Text>
-                <Text style={{ fontWeight: 'normal', color: Colors.WHITE,  fontSize:18}}>
-                    <Text>Edad</Text>   
-                    <Text style={{fontWeight:'bold'}}>{1233}
-                    </Text>
-                    </Text>
-            </View>
-             : 
-            <View >
-                
-            </View>
-        
-            }
             </View>
             
         
