@@ -9,11 +9,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StackActions } from '@react-navigation/native';
 import { useGlobalAuthContext } from '../utils/ContextFactory';
 import AppConstants from '../constants/AppConstants';
-import UsersList from '../components/UsersList'
-import UserAvatar from '../components/UserAvatar';
+import AttendingFriends from '../components/AttendingFriends';
 
-
-const MAX_SHOW_FRIENDS = 2;
 
 export default function EventDetailScreen({ route, navigation }) {
 
@@ -22,8 +19,9 @@ export default function EventDetailScreen({ route, navigation }) {
     const appAuthContext = useGlobalAuthContext();
     const userEmail = appAuthContext.userSession.getUserEmail();
     const [usersFriends, setUsersFriends] = React.useState([]);
+
     
-    const getUsers = async () => {
+    const getFriendsAttending = async () => {
         const paramsGet = {
             method: "GET",
             headers: {
@@ -32,27 +30,24 @@ export default function EventDetailScreen({ route, navigation }) {
         }
 
         const url = `${AppConstants.API_URL}/event/${event._id}/atendees?userEmail=${userEmail}`;
-        const response = await fetch(url, paramsGet);
-        const jsonResponse = await response.json();
-
-        if (response.status === 200){
-            if(!jsonResponse.status_code){
-                const arrayUsers = [];
-                for(let i=0; i<jsonResponse.length; i++){
-                    arrayUsers.push({
-                        "id": jsonResponse[i].id,
-                        "name": jsonResponse[i].name,
-                        "email": jsonResponse[i].email,
-                        "profilePic": jsonResponse[i].profilePic,
-                        "request": jsonResponse[i].request,
-                        "friends": jsonResponse[i].friends
-                    });
-                }
-                //TODO: manejo de errores.
-                setUsersFriends(arrayUsers);
-            }
-        }   
-    }
+        await fetch(url, paramsGet)
+            .then((response) => {return response.json()})
+            .then((data) => {
+                const arrayFriends = [];
+                            for (let i=0; i<data.length; i++){
+                                arrayFriends.push({
+                                    "id": data[i].id,
+                                    "name": data[i].name,
+                                    "email": data[i].email,
+                                    "profilePic": data[i].profilePic,
+                                })
+                        }
+                        setUsersFriends(arrayFriends);
+                        console.log(data)    
+                        console.log(usersFriends.length)   
+            });
+               
+        }
 
 
     const handleDelete = async () => {
@@ -121,27 +116,14 @@ export default function EventDetailScreen({ route, navigation }) {
         );
     }
 
-
-    const ShowFriends = () => {
-        let amount = usersFriends.size < MAX_SHOW_FRIENDS? usersFriends.size : MAX_SHOW_FRIENDS;
-        const friendsProfilePics = []
-        for (i; i < amount; i++){
-
-            friendsProfilePics.push(usersFriends[i].profilePic);
-        }
-    }
     React.useEffect(() => {
-        getUsers()
-    }, [])
+        getFriendsAttending();
 
+    }, []);
 
     return (
         
         <View style={{ flexDirection: 'column', width: '100%', paddingTop: 50, height: '100%', backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, alignContent: 'center' }}>
-            <View onPress={()=>UsersList(usersFriends)}>
-                <Text>Amigos que asisten</Text>
-                <FlatList horizontal data={() => ShowFriends()} renderItem={({item}) => <UserAvatar uri={item.profilePic}/>}/>
-            </View>
             <View>
                 <TouchableHighlight
                     style={{ position: 'absolute', top: 20, left: 20, zIndex: 1, borderRadius: 30 }}
@@ -170,6 +152,7 @@ export default function EventDetailScreen({ route, navigation }) {
                 <View style={{ marginTop: 20, borderRadius: 20, backgroundColor: Colors.PRIMARY_DARK_GRAYED, paddingLeft: 25, paddingVertical: 25 }}>
                     <Text style={{ fontWeight: 'bold', color: Colors.WHITE, fontSize: 20, marginTop: 5 }}><Entypo size={25} name="address" /> {event.location}</Text>
                 </View>
+                    <AttendingFriends usersFriends={usersFriends}/>
                 <View style={{ marginTop: 20, paddingBottom: 20, width: '100%', alignContent: 'center' }}>
                     {
                     event.owner == userEmail ?
