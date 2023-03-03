@@ -8,53 +8,48 @@ import { ScrollView } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { getFirebaseImage } from '../utils/FirebaseHandler';
 
-
-
-
 const MAX_SHOW_FRIENDS = 2;
 
 export default function AttendingFriends (props) {
-    const {usersFriends} = props;
-    const [friends, setFriends] = React.useState(usersFriends);
+    const [friends, setFriends] = React.useState(props.usersFriends);
     const [profiles, setProfiles] = React.useState([])
 
     React.useEffect(() => {
-        setFriends(usersFriends)
-        let pictures = ShowFriends().then((data)=> {return data})//promesa
-        setProfiles(pictures)
-    }, [usersFriends]) 
+        getUsersFriendsImage()
+    }, [props.usersFriends]) 
 
-    const  ShowFriends = async () => {
-        const friendsProfilePics = []
-        
-        for (let i = 0; i < friends.length; i++){
-            let uri = await getImage(friends[i].profilePic).then((data) => { return data })
-            friendsProfilePics.push(uri);
-        }
-        return friendsProfilePics;
+    
+    async function getImage(persona){
+      let imageURI;
+      try{
+        imageURI = await getFirebaseImage('files/'+persona.profilePic);
+      }catch(exception){
+        //Image not available
+        imageURI = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/640px-Image_not_available.png";
+      }
+      return imageURI
     }
 
-    async function getImage(persona){
-        let imageURI;
-        try{
-          imageURI = await getFirebaseImage('files/'+persona.profilePic);
-        }catch(exception){
-          //Image not available
-          imageURI = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/640px-Image_not_available.png";
+    async function getUsersFriendsImage (){
+      const friendsProfilePics = []
+        
+      for (let i = 0; i < friends.length; i++){
+          const uri = await getImage(friends[i].profilePic)
+          friendsProfilePics.push(uri);
         }
-        return imageURI
-      }
-   
+        setProfiles(friendsProfilePics);
+    }
+
 
     return (
         <View style={{ marginTop: 20, borderRadius: 20, backgroundColor: Colors.PRIMARY_DARK_GRAYED, paddingLeft: 25, paddingVertical: 25, }}  onPress={()=>UsersList(friends)}>
                 <Text style={{ textAlign:"center", fontWeight: 'bold', color: Colors.WHITE, fontSize: 20, marginTop: 5 }}> <Entypo size={35} name="users" />Amigos que asisten {usersFriends.lenght}
                 </Text>
-                <FlatList horizontal data={props.usersFriends.map(async () => profiles.splice(0, 3))} renderItem={({item}) => <UserAvatar uri={item}/>}/>
+                <FlatList horizontal data={profiles.splice(0,MAX_SHOW_FRIENDS)} renderItem={({item}) => <UserAvatar uri={item}/>}/>
 
         </View>
     )
-}
+    }
 //</ScrollView>
 
 //<FlatList horizontal data={DATA} renderItem={renderItem} /> 
