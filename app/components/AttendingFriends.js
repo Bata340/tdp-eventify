@@ -11,10 +11,11 @@ import { getFirebaseImage } from '../utils/FirebaseHandler';
 const MAX_SHOW_FRIENDS = 2;
 
 export default function AttendingFriends (props) {
-    const [friends, setFriends] = React.useState(props.usersFriends);
+    const [friends, setFriends] = React.useState([]);
     const [profiles, setProfiles] = React.useState([])
 
     React.useEffect(() => {
+        setFriends(props.usersFriends)
         getUsersFriendsImage()
     }, [props.usersFriends]) 
 
@@ -24,7 +25,6 @@ export default function AttendingFriends (props) {
       try{
         imageURI = await getFirebaseImage('files/'+persona.profilePic);
       }catch(exception){
-        //Image not available
         imageURI = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Image_not_available.png/640px-Image_not_available.png";
       }
       return imageURI
@@ -32,29 +32,25 @@ export default function AttendingFriends (props) {
 
     async function getUsersFriendsImage (){
       const friendsProfilePics = []
-        
+      console.log(props.usersFriends.length)
+
       for (let i = 0; i < friends.length; i++){
-          const uri = await getImage(friends[i].profilePic)
-          friendsProfilePics.push(uri);
+      console.log(friends[i].profilePic)
+
+          const uri = await getImage(friends[i])
+          friendsProfilePics.push({uri : uri});
         }
+        console.log(friendsProfilePics.length + 'ola')
         setProfiles(friendsProfilePics);
     }
 
 
     return (
         <View style={{ marginTop: 20, borderRadius: 20, backgroundColor: Colors.PRIMARY_DARK_GRAYED, paddingLeft: 25, paddingVertical: 25, }}  onPress={()=>UsersList(friends)}>
-                <Text style={{ textAlign:"center", fontWeight: 'bold', color: Colors.WHITE, fontSize: 20, marginTop: 5 }}> <Entypo size={35} name="users" />Amigos que asisten {usersFriends.lenght}
+                <Text style={{ textAlign:"center", fontWeight: 'bold', color: Colors.WHITE, fontSize: 20, marginTop: 5 }}> <Entypo size={35} name="users" /> Amigos que asisten 
                 </Text>
-                <FlatList horizontal data={profiles.splice(0,MAX_SHOW_FRIENDS)} renderItem={({item}) => <UserAvatar uri={item}/>}/>
+                <FlatList horizontal data={profiles.map(f => f.uri).splice(0, MAX_SHOW_FRIENDS)} renderItem={({item}) => <UserAvatar uri={item}/>}/>
 
         </View>
     )
     }
-//</ScrollView>
-
-//<FlatList horizontal data={DATA} renderItem={renderItem} /> 
-//
-
-//<View style={{flexDirection:"row", alignItems:"center", marginHorizontal:50}}>
-//<UserAvatar size={20} uri={appAuthContext.userSession.getUserAvatar()} />
-//</View>
