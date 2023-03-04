@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ScrollView, View, ActivityIndicator, RefreshControl } from 'react-native';
+import { ScrollView, View, ActivityIndicator, RefreshControl, Dimensions } from 'react-native';
 import AppConstants from '../constants/AppConstants';
 import EventCard from './EventCard';
 import { getFirebaseImage } from '../utils/FirebaseHandler';
@@ -78,7 +78,7 @@ export const EventsList = (id_persona = '') => {
 
     return (
         <ScrollView
-            contentContainerStyle={{ alignItems: 'center', paddingTop: '2%' ,height:'100%'  }}
+            contentContainerStyle={{ alignItems: 'center', paddingTop: '2%', paddingBottom:'10%', height:Dimensions.get("window").height }}
             refreshControl={
                 <RefreshControl refreshing={refreshing} 
                     onRefresh={onRefresh} />
@@ -90,7 +90,6 @@ export const EventsList = (id_persona = '') => {
             :
                 <ActivityIndicator size="large" color="#00ff00" />
             }
-            <View style={{ height: 230 }}></View>
         </ScrollView>
     );
 }

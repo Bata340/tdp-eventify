@@ -5,7 +5,7 @@ import QRCode from 'react-native-qrcode-svg';
 const EventifyLogo = require('../assets/eventify-logo.png');
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-export default function AddEventScreen ({route}) {
+export default function EventQR ({route, navigation}) {
 
     const event = route.params?.event;
     const dataQR = route.params?.dataQR;

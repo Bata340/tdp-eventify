@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, View, Text, Image, ActivityIndicator, RefreshControl } from 'react-native';
+import { ScrollView, View, Text, Image, ActivityIndicator, RefreshControl, Dimensions } from 'react-native';
 import EventCard from '../components/EventCard';
 import ScreenTitle from '../components/ScreenTitle';
 import Colors from '../constants/Colors';
@@ -60,31 +60,28 @@ export const FavoritesList = () => {
     }, [])
 
     return (
-        // <View style={{ width: '100%', paddingTop: '2%', height: '100%', backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, alignContent: 'center' }}>
-            //<ScreenTitle title="Mis eventos favoritos" />
-            <ScrollView
-                contentContainerStyle={{ alignItems: 'center', paddingTop: '2%', height:'100%' }}
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} 
-                        onRefresh={fetchFavList}  />
-                }
-            >
-                {
-                loading ? 
-                    <ActivityIndicator size="large" color="#00ff00" style={{height:'100%'}} />
-                :
-                    (
-                        favEvents.length > 0 ?
-                            favEvents.map(e => <EventCard key={'favorite-card-' + e._id.$oid} event={e} />)
-                        :
-                            <View style={{alignItems: 'center', borderWidth:5, borderRadius:20, borderColor: 'black', padding:10}}>
-                                <Image style={{ height: 150, width:150 }} source={{uri: "https://cdn4.iconfinder.com/data/icons/pictype-free-vector-icons/16/favorite-empty-512.png"}}/>
-                                <Text style={{fontSize: 20, color:"white", marginTop: 10}}>Aún no posees eventos favoritos...</Text>
-                            </View>
-                    )
-                }
-                
-            </ScrollView>
-        // </View>
+        <ScrollView
+            contentContainerStyle={{ alignItems: 'center', paddingTop: '2%', paddingBottom:'10%', height:Dimensions.get("window").height }}
+            refreshControl={
+                <RefreshControl refreshing={refreshing} 
+                    onRefresh={fetchFavList}  />
+            }
+        >
+            {
+            loading ? 
+                <ActivityIndicator size="large" color="#00ff00" style={{height:'100%'}} />
+            :
+                (
+                    favEvents.length > 0 ?
+                        favEvents.map(e => <EventCard key={'favorite-card-' + e._id} event={e} />)
+                    :
+                        <View style={{alignItems: 'center', borderWidth:5, borderRadius:20, borderColor: 'black', padding:10}}>
+                            <Image style={{ height: 150, width:150 }} source={{uri: "https://cdn4.iconfinder.com/data/icons/pictype-free-vector-icons/16/favorite-empty-512.png"}}/>
+                            <Text style={{fontSize: 20, color:"white", marginTop: 10}}>Aún no posees eventos favoritos...</Text>
+                        </View>
+                )
+            }
+            
+        </ScrollView>
     )
 }

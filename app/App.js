@@ -11,7 +11,6 @@ import SettingsScreen from './screens/SettingsScreen';
 import WalletScreen from './screens/WalletScreen';
 import Colors from './constants/Colors';
 import { TouchableOpacity, View } from 'react-native';
-import FavoritesScreen from './screens/FavoritesScreen';
 import LoginScreen from './screens/LoginScreen';
 import { StatusBar } from 'expo-status-bar';
 import { GlobalAuthContext, GlobalAuthActionsContext } from './utils/ContextFactory';
@@ -22,7 +21,7 @@ import EventPaymentForm from './screens/EventPaymentForm';
 import EditEventScreen from './screens/EditEventScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import ShowPeople from './screens/ShowPeople';
-import MyEventsAndTickets from './screens/MyEventsAndTickets';
+import { FriendsAssistanceToEvent } from './screens/FriendsAssistanceToEvent';
 
 function LoginStack() {
   const LoginStack = createNativeStackNavigator();
@@ -46,6 +45,7 @@ function EventsStack() {
       <EventsStack.Screen name="EventEdit" component={EditEventScreen} options={{ headerShown: false}}/>
       <EventsStack.Screen name="EventQR" component={EventQR} options={{ headerShown: false}}/>
       <EventsStack.Screen name="ShowPeople" component={ShowPeople} options={{ headerShown: false}}/>
+      <EventsStack.Screen name="PeopleInEvent" component={FriendsAssistanceToEvent} options={{ headerShown: false}}/>
     </EventsStack.Navigator>
   )
 }

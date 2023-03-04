@@ -33,7 +33,7 @@ export default function EventsScreen() {
                         :
                         <AntDesign name="hearto" color={Colors.GRAY} size={23} />
                     }
-                </TouchableOpacity>
+            </TouchableOpacity>
             
             
         </View>

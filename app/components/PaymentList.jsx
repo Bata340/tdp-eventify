@@ -32,7 +32,8 @@ export const PaymentList = (user) => {
             if(!jsonResponse.status_code){
                 const arrayPayments = [];
                 for(let i=0; i<jsonResponse.length; i++){
-                    const date = new Date(jsonResponse[i].date[0]);
+                    console.log(jsonResponse[i].date);
+                    const date = new Date(jsonResponse[i].date);
                     
                     arrayPayments.push({
                         _id: jsonResponse[i]._id.$oid,

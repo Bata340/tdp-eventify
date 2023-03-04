@@ -26,6 +26,7 @@ export default function ShowPeople(id_persona ='' , id_evento = '') {
             backgroundColor:Colors.PRIMARY_DARK_GRAYED,
         },
     });
+
     async function getUsers(){
         const paramsGet = {
             method: "GET",
@@ -41,23 +42,9 @@ export default function ShowPeople(id_persona ='' , id_evento = '') {
         const jsonResponse = await response.json();
         if (response.status === 200){
             if(!jsonResponse.status_code){
-                const arrayUsers = [];
-                for(let i=0; i<jsonResponse.length; i++){
-                    arrayUsers.push({
-                        "id": jsonResponse[i].id,
-                        "name": jsonResponse[i].name,
-                        "email": jsonResponse[i].email,
-                        "profilePic": jsonResponse[i].profilePic,
-                        "request": jsonResponse[i].request,
-                        "friends": jsonResponse[i].friends
-                    });
-                }
-                setUsers(arrayUsers);
+                setUsers(jsonResponse);
             }
-        }else{
-
-        }   
-        //setUsers(JSON.stringify(jsonResponse)); 
+        } 
     }
 
     async function getFriends(){
@@ -91,10 +78,7 @@ export default function ShowPeople(id_persona ='' , id_evento = '') {
                 }
                 setUsers(arrayUsers);
             }
-        }else{
-
-        }   
-        //setUsers(JSON.stringify(jsonResponse)); 
+        }
     }
     async function getRequests(){
         const paramsGet = {
@@ -123,10 +107,7 @@ export default function ShowPeople(id_persona ='' , id_evento = '') {
                 }
                 setUsers(arrayUsers);
             }
-        }else{
-
-        }   
-        //setUsers(JSON.stringify(jsonResponse)); 
+        }
     }
   
     useEffect( () => {
@@ -137,21 +118,15 @@ export default function ShowPeople(id_persona ='' , id_evento = '') {
                 break;
             case 3:
                 getFriends();
-            break;
-        
+                break;
             default:
                 getUsers();
                 break;
         }
-    //getUsers()
     // eslint-disable-next-line
     }, [tabSelectec]);
-    
-    const agregar = ()=>{
 
-    }
 
-//{padding:10, borderRadius:15,backgroundColor:Colors.PRIMARY_DARK_GRAYED},
     return (
         <View style={{ backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED,alignContent:'center', paddingTop: 50, height: '100%', }}>
             <ScreenTitle style={{}} title='Usuarios'></ScreenTitle>
@@ -173,7 +148,6 @@ export default function ShowPeople(id_persona ='' , id_evento = '') {
                 
             </View>
             <UsersList usuarios={users}  ></UsersList>
-            {/* <Text>{users} </Text> */}
         </View>
     )
 }

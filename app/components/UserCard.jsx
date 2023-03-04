@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import {  Text, View, ActivityIndicator, TouchableHighlight } from 'react-native';
+import {  Text, View, TouchableHighlight } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Colors from '../constants/Colors';
 import UserAvatar from './UserAvatar';
 import { getFirebaseImage } from '../utils/FirebaseHandler';
 import { useGlobalAuthContext } from '../utils/ContextFactory';
-import { async } from '@firebase/util';
 import AppConstants from '../constants/AppConstants';
 
-export const UserCard = ({persona}) => {
+export const UserCard = ({persona, showButtons = true}) => {
     const [toggle, setToggle] = useState(false);
     const [request, setRequest] = useState(persona.request);
     const [friends, setFriends] = useState(persona.friends);
@@ -99,7 +98,7 @@ export const UserCard = ({persona}) => {
 
             <View style={{ flexDirection: 'row' ,alignItems: 'flex-end' }}>
               {
-                friends ? 
+                friends && showButtons ? 
                 <TouchableHighlight underlayColor="00E88B" style={{alignItems:'center',backgroundColor:Colors.PRIMARY, borderRadius:20, padding:5, width:40, height:40}}  onPress={()=> {setFriends(false) }}>
                   <Ionicons size={25} color={Colors.WHITE} name='person-remove-outline'
                     />        
@@ -107,7 +106,7 @@ export const UserCard = ({persona}) => {
                 :<></>
               }
               {
-                request && !friends ? 
+                request && !friends && showButtons ? 
                 <TouchableHighlight underlayColor="00E88B" style={{alignItems:'center',backgroundColor:Colors.PRIMARY, borderRadius:20, padding:5, paddingTop:7, width:40, height:40}}  onPress={()=> { }}>
                   <Ionicons size={25} color={Colors.WHITE} name='paper-plane-outline'
                     />        
@@ -116,7 +115,7 @@ export const UserCard = ({persona}) => {
               }
 
               {
-                (!friends && !request && !toAccept ) ? 
+                (!friends && !request && !toAccept &&showButtons ) ? 
                 <TouchableHighlight underlayColor="00E88B" style={{alignItems:'center',backgroundColor:Colors.PRIMARY, borderRadius:20, padding:5, width:40, height:40}}  onPress={()=> { sendRequest()}}>
                   <Ionicons size={25} color={Colors.WHITE} name='person-add-outline'
                     />        
@@ -124,7 +123,7 @@ export const UserCard = ({persona}) => {
                 :<></>
               }
               {
-                toAccept ?
+                toAccept && showButtons ?
                 <TouchableHighlight underlayColor="00E88B" style={{alignItems:'center',backgroundColor:Colors.PRIMARY, borderRadius:20, padding:5, width:40, height:40}}  onPress={()=> { acceptRequest()}}>
                 <Ionicons size={25} color={Colors.WHITE} name='checkmark-outline'
                   />        

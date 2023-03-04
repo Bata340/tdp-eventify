@@ -10,6 +10,7 @@ import { StackActions } from '@react-navigation/native';
 import { useGlobalAuthContext } from '../utils/ContextFactory';
 import AppConstants from '../constants/AppConstants';
 import AttendingFriends from '../components/AttendingFriends';
+import { fetchFromURL } from '../utils/FetchAPI';
 
 
 export default function EventDetailScreen({ route, navigation }) {
@@ -22,32 +23,10 @@ export default function EventDetailScreen({ route, navigation }) {
 
     
     const getFriendsAttending = async () => {
-        const paramsGet = {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }
-
         const url = `${AppConstants.API_URL}/event/${event._id}/atendees?userEmail=${userEmail}`;
-        await fetch(url, paramsGet)
-            .then((response) => {return response.json()})
-            .then((data) => {
-                const arrayFriends = [];
-                            for (let i=0; i<data.length; i++){
-                                arrayFriends.push({
-                                    "id": data[i].id,
-                                    "name": data[i].name,
-                                    "email": data[i].email,
-                                    "profilePic": data[i].profilePic,
-                                })
-                        }
-                        setUsersFriends(arrayFriends);
-                        console.log(data)    
-                        console.log(usersFriends.length)   
-            });
-               
-        }
+        const data = await fetchFromURL(url);
+        setUsersFriends(data);
+    }
 
 
     const handleDelete = async () => {
