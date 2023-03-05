@@ -29,6 +29,7 @@
     "react-native": "0.70.5",
     "react-native-location-view": "^0.3.0",
     "react-native-mask-input": "^1.2.2",
+    "react-native-pager-view": "^6.1.4",
     "react-native-qrcode-svg": "^6.1.2",
     "react-native-safe-area-context": "4.4.1",
     "react-native-screens": "~3.18.0",
