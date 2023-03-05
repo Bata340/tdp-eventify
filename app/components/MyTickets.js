@@ -9,7 +9,7 @@ export default function MyTickets() {
     const navigation = useNavigation();
 
     return (
-        <View style={{ backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, paddingBottom: 100, minHeight:Dimensions.get("window").height }}>
+        <View style={{ backgroundColor: Colors.PRIMARY_VERY_DARK_GRAYED, paddingBottom: 200, minHeight:Dimensions.get("window").height }}>
             <EventsListQR/>
         </View>
     );

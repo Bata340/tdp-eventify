@@ -10,9 +10,9 @@ const UserProfile = () => {
   const appAuthContext = useGlobalAuthContext();
   const birthDate = appAuthContext.userSession.getUserBirthDate();
   return (
-    <ScrollView>
+    <View>
       <View style={styles.container}>
-        <UserAvatar size={200} uri={appAuthContext.userSession.getUserAvatar()} />
+        <UserAvatar size={100} uri={appAuthContext.userSession.getUserAvatar()} />
         <Text style={styles.name}>{appAuthContext.userSession.getUserFullName()}</Text>
         <Text style={styles.email}>{appAuthContext.userSession.getUserEmail()}</Text>
         <Text style={styles.birth_date}>{birthDate.substr(8,2)+"/"+birthDate.substr(5,2)+"/"+birthDate.substr(0,4)}</Text>
@@ -20,7 +20,7 @@ const UserProfile = () => {
       <View style={{minHeight: 400, maxHeight: window.height}}>
         <MyEventsAndTickets/>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 

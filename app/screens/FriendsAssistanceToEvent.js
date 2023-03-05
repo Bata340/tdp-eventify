@@ -9,7 +9,7 @@ const EventifyLogo = require('../assets/eventify-logo.png');
 
 
 
-export const FriendsAssistanceToEvent = ({route, usuarios, showButtons = true, navigation}) => {
+export const FriendsAssistanceToEvent = ({route, usuarios, showButtons = false, navigation}) => {
     return (
       <View style={{ backgroundColor: Colors.PRIMARY_VERY_DARK, paddingBottom: 50, paddingTop: 100, height: Dimensions.get("window").height}}>
         <View>
