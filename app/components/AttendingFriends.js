@@ -52,8 +52,8 @@ export default function AttendingFriends (props) {
             }
           }}>
           <View>
-            <Text style={{ textAlign:"center", fontWeight: 'bold', color: Colors.WHITE, fontSize: 20, marginTop: 5 }}> <Entypo size={35} name="users" /> 
-              Amigos que asisten 
+            <Text style={{ textAlign:"center", fontWeight: 'bold', color: Colors.WHITE, fontSize: 20, marginTop: 5 }}> <Entypo size={30} name="users" /> 
+            &nbsp; Amigos que asisten 
             </Text>
           </View>
           <View style={{justifyContent:"center", alignItems:"center", marginTop:20}}>

@@ -38,9 +38,9 @@ export const HeaderUser = () => {
                        <Text style={{ color: Colors.WHITE, fontSize: 22 }}><Ionicons size={23} color={Colors.PRIMARY} name="location-outline" />  Buenos Aires</Text>
                 </View>
 
-                <TouchableHighlight underlayColor="00E88B" style={{alignItems:'center',backgroundColor:Colors.PRIMARY, borderRadius:20, padding:5, width:40, height:40}}  onPress={()=> {navigation.navigate("ShowPeople") }}>
+                {/* <TouchableHighlight underlayColor="00E88B" style={{alignItems:'center',backgroundColor:Colors.PRIMARY, borderRadius:20, padding:5, width:40, height:40}}  onPress={()=> {navigation.navigate("ShowPeople") }}>
                     <Ionicons size={25} color={Colors.WHITE} name="people-outline"  />        
-                </TouchableHighlight>
+                </TouchableHighlight> */}
                     
             </View>
              : 

@@ -9,6 +9,9 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useGlobalAuthActionsContext, useGlobalAuthContext } from '../utils/ContextFactory';
 import AppConstants from '../constants/AppConstants';
 import { postDataToURL } from '../utils/FetchAPI';
+import Ionicons from '@expo/vector-icons/Ionicons';
+
+import { fetchFromURL } from '../utils/FetchAPI';
 
 export default function EventCard({
     event = {},
@@ -19,11 +22,21 @@ export default function EventCard({
     const userEmail = appAuthContext.userSession.getUserEmail();
     const [isFaved, setIsFaved] = useState(false);
     const navigation = useNavigation();
+    const [ownerName, setOwnerName] = useState('');
 
     useEffect(() => {
         setIsFaved(event.isFav);
     }, [event]);
 
+    useEffect(() => {
+        getOwnerName(event.owner);
+    }, []);
+
+    const getOwnerName = async (ownerName) => {
+        const url = `${AppConstants.API_URL}/users?email=${ownerName}`;
+        const data = await fetchFromURL(url);
+        setOwnerName(data[0].name);
+    }
     const onFavoritePress = () => {
         postDataToURL(
             `${AppConstants.API_URL}/events/favourites/toggle`,
@@ -128,6 +141,7 @@ export default function EventCard({
             >
                 <View style={{ flex: 7 }}>
                     <Text style={{ fontWeight: 'bold', fontSize: 26, color: Colors.WHITE }}>{event.name}</Text>
+                    <Text style={{ fontWeight: 'bold', fontSize: 16, color: Colors.WHITE }}><Feather name="user" /> {ownerName}</Text>
                     <Text style={{ color: Colors.WHITE, fontSize: 16, marginTop: 10 }}><Feather name="calendar" /> {event.date} {event.time}hs</Text>
                     <Text style={{ color: Colors.WHITE, fontSize: 16, marginTop: 5 }}><Entypo name="address" /> {event.location}</Text>
                 </View>

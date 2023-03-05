@@ -61,7 +61,7 @@ export const FavoritesList = () => {
 
     return (
         <ScrollView
-            contentContainerStyle={{ alignItems: 'center', paddingTop: '2%', paddingBottom:'10%', height:Dimensions.get("window").height }}
+            contentContainerStyle={{ alignItems: 'center', paddingTop: '2%', paddingBottom:'10%', minHeight:Dimensions.get("window").height }}
             refreshControl={
                 <RefreshControl refreshing={refreshing} 
                     onRefresh={fetchFavList}  />
