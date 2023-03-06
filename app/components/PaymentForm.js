@@ -25,14 +25,23 @@ const maskCVV = [ /\d/, /\d/, /\d/ ];
 const maskCard = [ /\d/, /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/, ' ', /\d/, /\d/, /\d/, /\d/ ];
 const maskExpire = [ /\d/, /\d/, '/', /\d/, /\d/ ];
 
+const creditCard = getRandomInt(1000,9999);
+
+const mesCard= getRandomInt(10,13);
+const anioCard = getRandomInt(24,30);
 const initialState = {
     cardHolderName: "",
     cardType: "debit",
-    cardNumber: {"masked":"", "unmasked":""},
-    expireDate: {"masked":"", "unmasked":""},
+    cardNumber: {"masked":"4517 6179 5235 "+creditCard , "unmasked":"451761795235"+creditCard},
+    expireDate: {"masked":`${mesCard}/${anioCard}`, "unmasked":`${mesCard}${anioCard}`},
     cvv: {"masked":"", "unmasked": ""}
 };
 
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+  }
 export default function PaymentForm ( { event } ) {
 
     const fontSize = 14;
@@ -41,8 +50,9 @@ export default function PaymentForm ( { event } ) {
     const appAuthContext = useGlobalAuthContext();
 
     const userEmail = appAuthContext.userSession.getUserEmail();
+    const userName = appAuthContext.userSession.getUserFullName();
     
-
+    
 
     const styles = StyleSheet.create({
         textInput: {
@@ -71,7 +81,7 @@ export default function PaymentForm ( { event } ) {
         }
     });
 
-    const [stateForm, setStateForm] = useState(initialState);
+    const [stateForm, setStateForm] = useState({...initialState ,cardHolderName:userName});
 
 
     const clearForm = () => {
