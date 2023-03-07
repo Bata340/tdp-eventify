@@ -128,7 +128,8 @@ export default function PaymentForm ( { event } ) {
                 body: JSON.stringify({
                     userid: userId, 
                     dateReserved: event.isoStringDate,
-                    typeOfCard: stateForm.cardType
+                    typeOfCard: stateForm.cardType,
+                    numberCard: stateForm.cardNumber.unmasked
                 })
             };
             const url = `${AppConstants.API_URL}/event/reserve/${event._id}`;

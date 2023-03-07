@@ -40,8 +40,12 @@ export const PaymentCard = ({payment} ) => {
         const jsonResponse = await response.json();
         if (response.status === 200){
             if(!jsonResponse.status_code){
+                if(jsonResponse.message.name.length > 23){
+                    setEvent(jsonResponse.message.name.slice(0,20)+'...');
+                }else{
+                    setEvent(jsonResponse.message.name);
+                }
                 
-                setEvent(jsonResponse.message.name);
             }
         }     
     };
@@ -55,6 +59,7 @@ export const PaymentCard = ({payment} ) => {
             
         }
         
+        
       }, [])
       
   return (
@@ -62,12 +67,12 @@ export const PaymentCard = ({payment} ) => {
         <TouchableHighlight style={{width:'90%' , backgroundColor: Colors.PRIMARY_DARK_GRAYED  , borderRadius:10 , marginBottom:10}} onPress={ onPressButton}>
             
             <View style= {{padding:10 , justifyContent:'center'}}>
-            <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+            <View style={{flexDirection:'row', justifyContent:'space-between' }}>
                 
                 
                 
             
-            <Text style={{ fontWeight: 'bold', color: Colors.WHITE, fontSize:20,verticalAlign:'top', textAlign:'left'}}><Ionicons name={debito?"arrow-back-outline":'arrow-forward-outline'} color={debito?'#FC6D6D':Colors.WHITE} size={20} />&nbsp;{event}</Text>
+            <Text style={{ fontWeight: 'bold', color: Colors.WHITE, fontSize:19,verticalAlign:'top', textAlign:'left'}}><Ionicons name={debito?"arrow-back-outline":'arrow-forward-outline'} color={debito?'#FC6D6D':Colors.WHITE} size={20} />&nbsp;{event}</Text>
                 
             
             <Text style={[{ fontWeight: 'bold', fontSize:20,textAlign:'right', borderRadius:10,color:Colors.WHITE}]}>{debito ?   `- $${Math.abs(payment.paymentAmount)}`:`$${payment.paymentAmount}` }</Text>
@@ -86,7 +91,7 @@ export const PaymentCard = ({payment} ) => {
                 </Text>
                     </>
                     
-                    :{}}
+                    :<></>}
                 
                 <Text style={{ fontWeight: 'normal', color: Colors.WHITE,  fontSize:16}}>
                     <Text>Fecha de pago: </Text>
